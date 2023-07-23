@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "post-recommend": "/pages/body/switch/inCommunity/postRecommend",
+    "post-near": "/pages/body/switch/inCommunity/postNear"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "用户资料",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "kt-nav-bar": "/uni_modules/uniapp-kantboot/components/kt-nav-bar/kt-nav-bar",
+    "user-card": "/components/user-card/user-card",
+    "post-list": "/pages/public/inUserInfo/postList"
+  }
+}

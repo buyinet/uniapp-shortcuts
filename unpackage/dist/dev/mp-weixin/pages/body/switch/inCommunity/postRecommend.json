@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "user-post": "/components/user-post/user-post",
+    "host-post": "/pages/body/switch/inCommunity/hostPost"
+  }
+}

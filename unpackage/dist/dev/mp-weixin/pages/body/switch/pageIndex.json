@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "u-toast": "/uni_modules/uview-ui/components/u-toast/u-toast",
+    "grid": "/pages/body/switch/inIndex/grid",
+    "user-list-of-recommend": "/pages/body/switch/inIndex/userListOfRecommend",
+    "user-list-of-near": "/pages/body/switch/inIndex/userListOfNear"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "O币充值",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "o-money": "/components/o-money/o-money",
+    "u-grid": "/uni_modules/uview-ui/components/u-grid/u-grid",
+    "u-grid-item": "/uni_modules/uview-ui/components/u-grid-item/u-grid-item",
+    "kt-button": "/uni_modules/uniapp-kantboot/components/kt-button/kt-button",
+    "u-divider": "/uni_modules/uview-ui/components/u-divider/u-divider",
+    "kt-pay": "/components/kt-pay/kt-pay"
+  }
+}

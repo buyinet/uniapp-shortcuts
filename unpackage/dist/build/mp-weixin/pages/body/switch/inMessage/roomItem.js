@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["pages/body/switch/inMessage/roomItem"],{"20ce":function(t,e,n){"use strict";n.d(e,"b",(function(){return a})),n.d(e,"c",(function(){return i})),n.d(e,"a",(function(){return o}));var o={userCard:function(){return n.e("components/user-card/user-card").then(n.bind(null,"26a1"))}},a=function(){var t=this.$createElement;this._self._c},i=[]},"3cda":function(t,e,n){"use strict";n.r(e);var o=n("20ce"),a=n("ba21");for(var i in a)["default"].indexOf(i)<0&&function(t){n.d(e,t,(function(){return a[t]}))}(i);n("9fc7");var r=n("f0c5"),u=Object(r["a"])(a["default"],o["b"],o["c"],!1,null,"7b7c68e6",null,!1,o["a"],void 0);e["default"]=u.exports},"842b":function(t,e,n){"use strict";(function(t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;var n={props:["item"],data:function(){return{ovoUserSelf:{userId:""},bodyData:{fileIdOfAvatar:"",name:"",lastChat:{typeCode:"",content:"",userIdOfSend:""}},lastChatText:""}},mounted:function(){var e=this;this.ovoUserSelf=this.$ovo.getSelf(),this.bodyData=this.item,t.$on("newChat:roomId:"+this.bodyData.roomId,(function(t){e.bodyData.lastChat=t}))},methods:{toChatBody:function(e){t.setStorageSync("roomId:"+e.id+":room",e),this.$kt.util.navTo("/pages/public/chat-body?roomId="+e.id)}},watch:{item:{handler:function(t,e){this.bodyData=t,console.log("roomItem.vue: ",this.bodyData)},deep:!0,immediate:!0}}};e.default=n}).call(this,n("543d")["default"])},"9fc7":function(t,e,n){"use strict";var o=n("e613"),a=n.n(o);a.a},ba21:function(t,e,n){"use strict";n.r(e);var o=n("842b"),a=n.n(o);for(var i in o)["default"].indexOf(i)<0&&function(t){n.d(e,t,(function(){return o[t]}))}(i);e["default"]=a.a},e613:function(t,e,n){}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'pages/body/switch/inMessage/roomItem-create-component',
+    {
+        'pages/body/switch/inMessage/roomItem-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("3cda"))
+        })
+    },
+    [['pages/body/switch/inMessage/roomItem-create-component']]
+]);

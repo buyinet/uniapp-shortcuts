@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "我的魅力",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "kt-nav-bar": "/uni_modules/uniapp-kantboot/components/kt-nav-bar/kt-nav-bar",
+    "user-card": "/components/user-card/user-card",
+    "u-count-to": "/uni_modules/uview-ui/components/u-count-to/u-count-to",
+    "user-popup": "/components/user-popup/user-popup"
+  }
+}

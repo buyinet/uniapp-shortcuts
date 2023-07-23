@@ -1,0 +1,31 @@
+{
+  "pages": [
+    "pages/init/init",
+    "pages/login/login",
+    "pages/init/selfInfoInit",
+    "pages/body/static",
+    "pages/vip/vip",
+    "pages/public/o-money-recharge",
+    "pages/public/publish-post",
+    "pages/public/user-info",
+    "pages/public/post-body",
+    "pages/public/chat-body",
+    "pages/public/follow-list"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#FFFFFF"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "为了更好的体验"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "usingComponents": {}
+}

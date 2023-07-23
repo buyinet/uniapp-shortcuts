@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "O币明细",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "o-money": "/components/o-money/o-money"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "发布帖子",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "kt-nav-bar": "/uni_modules/uniapp-kantboot/components/kt-nav-bar/kt-nav-bar",
+    "address-lab": "/components/address-lab/address-lab",
+    "eye-lab": "/components/eye-lab/eye-lab",
+    "visible-popup": "/pages/public/inPublishPost/visiblePopup",
+    "select-address-show-popup": "/pages/public/inPublishPost/selectAddressShowPopup"
+  }
+}

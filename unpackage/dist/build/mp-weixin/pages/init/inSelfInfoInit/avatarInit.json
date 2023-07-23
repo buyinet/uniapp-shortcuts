@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "kt-button": "/uni_modules/uniapp-kantboot/components/kt-button/kt-button"
+  },
+  "component": true
+}

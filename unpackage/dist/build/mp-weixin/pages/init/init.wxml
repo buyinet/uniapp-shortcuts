@@ -1,0 +1,1 @@
+<view><view class="box"><view><image class="box-icon" mode="widthFix" src="{{$root.g0}}"></image></view><view style="font-weight:bold;">{{''+text+''}}</view></view></view>

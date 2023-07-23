@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "登录",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "wechat-mp-login": "/pages/login/components/wechatMpLogin"
+  }
+}

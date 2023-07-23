@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["pages/init/inSelfInfoInit/sexualOrientation"],{"0131":function(t,e,n){"use strict";n.r(e);var i=n("a19c"),a=n("2e89");for(var u in a)["default"].indexOf(u)<0&&function(t){n.d(e,t,(function(){return a[t]}))}(u);n("2362");var o=n("f0c5"),s=Object(o["a"])(a["default"],i["b"],i["c"],!1,null,"75c9e3ca",null,!1,i["a"],void 0);e["default"]=s.exports},2362:function(t,e,n){"use strict";var i=n("359d"),a=n.n(i);a.a},"2e89":function(t,e,n){"use strict";n.r(e);var i=n("4713"),a=n.n(i);for(var u in i)["default"].indexOf(u)<0&&function(t){n.d(e,t,(function(){return i[t]}))}(u);e["default"]=a.a},"359d":function(t,e,n){},4713:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;e.default={data:function(){return{show:!1,requestParam:{sexualOrientationCode:""},sexualOrientationList:[{code:"male",name:"男性"},{code:"woman",name:"女性"},{code:"bisexual",name:"双性恋"},{code:"pansexual",name:"泛性恋"},{code:"nonsexuality",name:"无性恋"}]}},mounted:function(){this.getSexualOrientationList()},methods:{open:function(){this.show=!0},close:function(){this.show=!1},checkSexualOrientation:function(t){this.requestParam.sexualOrientationCode=t,this.$emit("checkSexualOrientation",t)},getSexualOrientationList:function(){var t=this;this.$kt.request.request({api:this.$api.business.ovo.sexualOrientation.getList,stateSuccess:function(e){t.sexualOrientationList=e.data}})}}}},a19c:function(t,e,n){"use strict";n.d(e,"b",(function(){return i})),n.d(e,"c",(function(){return a})),n.d(e,"a",(function(){}));var i=function(){var t=this.$createElement;this._self._c},a=[]}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'pages/init/inSelfInfoInit/sexualOrientation-create-component',
+    {
+        'pages/init/inSelfInfoInit/sexualOrientation-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("0131"))
+        })
+    },
+    [['pages/init/inSelfInfoInit/sexualOrientation-create-component']]
+]);

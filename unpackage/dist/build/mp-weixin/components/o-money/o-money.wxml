@@ -1,0 +1,1 @@
+<view class="box data-v-d1330e88"><image class="img data-v-d1330e88" style="{{'width:'+(size)+';'+('height:'+(size)+';')}}" src="{{$root.g0}}" mode="widthFix"></image></view>

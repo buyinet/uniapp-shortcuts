@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "user-card": "/components/user-card/user-card",
+    "avatar": "/components/avatar/avatar"
+  },
+  "component": true
+}

@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "聊天内容",
+  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "kt-nav-bar": "/uni_modules/uniapp-kantboot/components/kt-nav-bar/kt-nav-bar",
+    "follow-btn": "/components/follow-btn/follow-btn",
+    "scroll-view-box": "/pages/public/inChatBody/scrollViewBox",
+    "chat-input": "/pages/public/inChatBody/chatInput"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "o-money": "/components/o-money/o-money"
+  }
+}
