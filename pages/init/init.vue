@@ -34,8 +34,14 @@
       this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
     },
 	methods:{
+		toWeb(src){
+			var src1=encodeURIComponent(src);
+			uni.navigateTo({
+				url:"/pages/web-view-page?src="+src1
+			})
+		},
 		a(){
-			plus.runtime.openURL("https://www.baidu.com")
+			this.toWeb("https://www.baidu.com");
 		},
 		b(){
 			

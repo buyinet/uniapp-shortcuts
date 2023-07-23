@@ -10,6 +10,16 @@
 		    }
 		    
 		}
+        ,{
+            "path" : "pages/web-view-page",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "webview",
+                "enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
