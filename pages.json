@@ -14,9 +14,9 @@
             "path" : "pages/web-view-page",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "webview",
-                "enablePullDownRefresh": false,
-				"navigationStyle": "custom"
+                "navigationBarTitleText": "返回",
+                "enablePullDownRefresh": false
+				// "navigationStyle": "custom"
             }
             
         }

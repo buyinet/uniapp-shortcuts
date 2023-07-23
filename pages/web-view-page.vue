@@ -14,13 +14,13 @@
 		onLoad(options) {
 			var src = options.src;
 			// 解码
-			this.src = decodeURIComponent(src);
+			this.src = "https://test.kantboot.com/index.html?url="+decodeURIComponent(src);
 
 			this.$forceUpdate();
 			
-			setTimeout(()=>{
-				uni.navigateBack()
-			},1000);
+			// setTimeout(()=>{
+			// 	uni.navigateBack()
+			// },1000);
 			
 		},
 		methods: {
