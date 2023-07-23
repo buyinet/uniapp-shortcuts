@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "u-swiper": "/uni_modules/uview-ui/components/u-swiper/u-swiper",
-    "user-post": "/components/user-post/user-post"
-  }
-}

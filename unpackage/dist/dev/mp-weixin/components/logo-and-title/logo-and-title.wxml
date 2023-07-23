@@ -1,1 +1,0 @@
-<view class="box data-v-5abe2f44" style="{{'top:'+(statusBarHeight- -5+'px')+';'+('left:'+('30rpx')+';')}}"><image class="box-icon data-v-5abe2f44" src="{{$root.g0}}"></image><text class="box-text data-v-5abe2f44">OVO</text></view>

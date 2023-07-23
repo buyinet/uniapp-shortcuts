@@ -1,9 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "sexual-orientation": "/pages/init/inSelfInfoInit/sexualOrientation",
-    "emotional-orientation": "/pages/init/inSelfInfoInit/emotionalOrientation",
-    "birthday": "/pages/init/inSelfInfoInit/birthday",
-    "sadomasochism-attr": "/pages/init/inSelfInfoInit/sadomasochismAttr"
-  }
-}

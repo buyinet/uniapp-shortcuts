@@ -25,9 +25,7 @@ let byId = function (uuid) {
  * @return 返回一个函数，调用该函数返回查看文件的url
  */
 let byPath = function (path) {
-
 	var url = `https://file1.kantboot.com/${path}`;
-	
 	return url;
 }
 

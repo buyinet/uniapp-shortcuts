@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "关注列表",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "user-card": "/components/user-card/user-card",
-    "user-popup": "/components/user-popup/user-popup"
-  }
-}

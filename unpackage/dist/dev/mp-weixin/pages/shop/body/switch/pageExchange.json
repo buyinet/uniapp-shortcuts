@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "shop-goods": "/pages/shop/body/switch/inPageExchange/shopGoods"
-  }
-}

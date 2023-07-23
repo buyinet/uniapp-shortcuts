@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "room-item": "/pages/body/switch/inMessage/roomItem"
-  }
-}

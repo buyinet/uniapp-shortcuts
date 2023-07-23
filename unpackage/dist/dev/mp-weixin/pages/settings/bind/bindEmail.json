@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "绑定邮箱",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "user-card": "/components/user-card/user-card",
-    "kt-button": "/uni_modules/uniapp-kantboot/components/kt-button/kt-button"
-  }
-}

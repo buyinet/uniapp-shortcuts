@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "user-post": "/components/user-post/user-post"
-  }
-}

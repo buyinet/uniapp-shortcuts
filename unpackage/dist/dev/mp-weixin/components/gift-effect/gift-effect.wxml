@@ -1,1 +1,0 @@
-<view class="data-v-c5a42dbc"><block wx:if="{{isShow}}"><view class="box data-v-c5a42dbc"><view class="box-back data-v-c5a42dbc"></view><view class="box-content data-v-c5a42dbc"><image class="{{['data-v-c5a42dbc','box-img'+(item.costOfOMoney>=100?' box-img-big':' box-img-small')]}}" src="{{$root.g0}}" mode="widthFix"></image></view></view></block></view>

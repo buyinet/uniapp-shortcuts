@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "u-tooltip": "/uni_modules/uview-ui/components/u-tooltip/u-tooltip"
-  }
-}

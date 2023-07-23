@@ -1,9 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "u-grid": "/uni_modules/uview-ui/components/u-grid/u-grid",
-    "u-grid-item": "/uni_modules/uview-ui/components/u-grid-item/u-grid-item",
-    "gift-popup": "/components/gift-popup/gift-popup",
-    "voice-box": "/pages/public/inChatBody/inChatInput/voiceBox"
-  }
-}

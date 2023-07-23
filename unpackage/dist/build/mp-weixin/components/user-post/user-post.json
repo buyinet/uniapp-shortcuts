@@ -1,9 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "user-card": "/components/user-card/user-card",
-    "address-lab": "/components/address-lab/address-lab",
-    "eye-lab": "/components/eye-lab/eye-lab",
-    "user-post-content": "/components/user-post/userPostContent"
-  }
-}

@@ -1,1 +1,0 @@
-<view data-event-opts="{{[['tap',[['$emit',['click']]]]]}}" class="opt-btn data-v-553fbde8" bindtap="__e"><image class="opt-icon data-v-553fbde8" src="{{$root.g0}}"></image><block wx:if="{{visibleCode==null||visibleCode==''}}"><text class="opt-text data-v-553fbde8">所有人可见</text></block><block wx:else><text class="opt-text data-v-553fbde8">{{''+$root.m0+''}}</text></block></view>
