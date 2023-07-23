@@ -1,5 +1,3 @@
-# gitignore 
-unpackage
 # Ignore whole directories
 .hbuilderx/launch.json
 unpackage/dist/build/app-plus/app-config-service.js
