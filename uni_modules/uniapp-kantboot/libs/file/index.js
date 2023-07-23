@@ -26,13 +26,7 @@ let byId = function (uuid) {
  */
 let byPath = function (path) {
 
-	// #ifdef MP-WEIXIN
 	var url = `https://file1.kantboot.com/${path}`;
-	// #endif
-	
-	// #ifdef APP-PLUS
-	var url = `/static/pageFile/${path}`;
-	// #endif
 	
 	return url;
 }
