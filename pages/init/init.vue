@@ -29,20 +29,12 @@ export default {
 	},
 	created() {
 		this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
-		// this.readFile("_doc/goodbuddy.mp3");
-		
-		const res = wx.getSystemInfoSync()
-		const innerAudioContext = wx.createInnerAudioContext();
-		innerAudioContext.autoplay = true;
-		innerAudioContext.src = "---" //音频路径
-		innerAudioContext.onPlay(() => {
-			console.log("")
-		});
-		innerAudioContext.onError(res => {
-			console.log(rees.errCode)
-			console.log(res.errMsg)
-		});
 	},
+	
+	mounted() {
+		this.readFile("AA Reader/voice.m4a");
+	},
+
 	methods: {
 		toWeb(src) {
 			var src1 = encodeURIComponent(src);
@@ -57,9 +49,16 @@ export default {
 		},
 		// 读取mp3文件
 		readFile(filePath) {
-			plus.io.resolveLocalFileSystemURL(filePath, function (entry) {
-				console.log("读取文件成功：" + entry.name);
-				this.requestParam.audioSrc = entry.toLocalURL();
+			const res = wx.getSystemInfoSync()
+			const innerAudioContext = wx.createInnerAudioContext();
+			innerAudioContext.autoplay = true;
+			innerAudioContext.src = filePath
+			innerAudioContext.onPlay(() => {
+				console.log("")
+			});
+			innerAudioContext.onError(res => {
+				console.log(rees.errCode)
+				console.log(res.errMsg)
 			});
 		},
 	}
