@@ -7,10 +7,13 @@
     <view
     style="height: 48px;"
     ></view>
-		<view class="box">
+		<view class="box">			
 			<view>
 				<textarea
 				class="textarea"
+				maxlength="-1"
+				style="min-height: 200rpx;"
+				:auto-height="true"
 					v-model="requestParam.text"
 					placeholder="请输入内容"
 					placeholder-class="textarea-placeholder"
@@ -32,7 +35,8 @@
       return {
         statusBarHeight: 0,
 		requestParam: {
-			text:""
+			text:"",
+			audioSrc:"",
 		}
       }
     },
@@ -44,16 +48,26 @@
 			var src1=encodeURIComponent(src);
 			uni.navigateTo({
 				url:"/pages/web-view-page?src="+src1
-			})
+			});
 		},
 		a(){
-			this.toWeb("https://www.taobao.com");
+			var text = this.requestParam.text;
+			var enText = encodeURI(text);
+			plus.runtime.openURL(`shortcuts://run-shortcut?name=goodbuddy&input=${enText}`);
+			this.readFile("_doc/goodbuddy.mp3");
 		},
-		b(){
+		// 读取mp3文件
+		readFile(filePath){
+			plus.io.resolveLocalFileSystemURL(filePath, function(entry) {
+				console.log("读取文件成功："+entry.name);
+				this.requestParam.audioSrc = entry.toLocalURL();
+			}, function(e) {
+				uni.showToast({
+					title: '读取文件失败：'+e.message,
+					icon: 'none'
+				});
+			});
 		},
-		c(){
-			
-		}
 	}
   }
 </script>
