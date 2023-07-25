@@ -8,17 +8,20 @@
     style="height: 48px;"
     ></view>
 		<view class="box">
+			<view>
+				<textarea
+				class="textarea"
+					v-model="requestParam.text"
+					placeholder="请输入内容"
+					placeholder-class="textarea-placeholder"
+				/>
+			</view>
+
+			<view style="height: 60rpx;"></view>
+			
 			<kt-button
 			@click="a()"
-			>下载快捷捷径</kt-button>
-      <view style="height: 20rpx;"></view>
-			<kt-button
-			@click="b()"
-			>下载快捷捷径</kt-button>
-      <view style="height: 20rpx;"></view>
-			<kt-button
-			@click="c()"
-			>下载快捷捷径</kt-button>
+			>生成文本</kt-button>
 		</view>
 	</view>
 </template>
@@ -28,6 +31,9 @@
     data(){
       return {
         statusBarHeight: 0,
+		requestParam: {
+			text:""
+		}
       }
     },
     created(){
@@ -56,5 +62,18 @@
 .box{
   padding: 30rpx;
   box-sizing: border-box;
+}
+
+.textarea{
+	  width: 100%;
+  height: 300rpx;
+  border: 1px solid #ccc;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  color: #333;
+  resize: none;
 }
 </style>
