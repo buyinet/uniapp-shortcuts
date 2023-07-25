@@ -1,93 +1,87 @@
 <template>
 	<view>
-    <view
-    :style="'height:'+statusBarHeight+'px'"
-    ></view>
-    
-    <view
-    style="height: 48px;"
-    ></view>
-		<view class="box">			
+		<view :style="'height:' + statusBarHeight + 'px'"></view>
+
+		<view style="height: 48px;"></view>
+		<view class="box">
 			<view>
-				<textarea
-				class="textarea"
-				maxlength="-1"
-				style="min-height: 200rpx;"
-				:auto-height="true"
-					v-model="requestParam.text"
-					placeholder="请输入内容"
-					placeholder-class="textarea-placeholder"
-				/>
+				<textarea class="textarea" maxlength="-1" style="min-height: 200rpx;" :auto-height="true"
+					v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
 			</view>
 
 			<view style="height: 60rpx;"></view>
-			
-			<kt-button
-			@click="a()"
-			>生成文本</kt-button>
+
+			<kt-button @click="a()">生成文本</kt-button>
 		</view>
 	</view>
 </template>
 
 <script>
-	export default {
-    data(){
-      return {
-        statusBarHeight: 0,
-		requestParam: {
-			text:"",
-			audioSrc:"",
+export default {
+	data() {
+		return {
+			statusBarHeight: 0,
+			requestParam: {
+				text: "",
+				audioSrc: "",
+			}
 		}
-      }
-    },
-    created(){
-      this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
-    },
-	methods:{
-		toWeb(src){
-			var src1=encodeURIComponent(src);
+	},
+	created() {
+		this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
+		// this.readFile("_doc/goodbuddy.mp3");
+		
+		const res = wx.getSystemInfoSync()
+		const innerAudioContext = wx.createInnerAudioContext();
+		innerAudioContext.autoplay = true;
+		innerAudioContext.src = "---" //音频路径
+		innerAudioContext.onPlay(() => {
+			console.log("")
+		});
+		innerAudioContext.onError(res => {
+			console.log(rees.errCode)
+			console.log(res.errMsg)
+		});
+	},
+	methods: {
+		toWeb(src) {
+			var src1 = encodeURIComponent(src);
 			uni.navigateTo({
-				url:"/pages/web-view-page?src="+src1
+				url: "/pages/web-view-page?src=" + src1
 			});
 		},
-		a(){
+		a() {
 			var text = this.requestParam.text;
 			var enText = encodeURI(text);
 			plus.runtime.openURL(`shortcuts://run-shortcut?name=goodbuddy&input=${enText}`);
-			this.readFile("_doc/goodbuddy.mp3");
 		},
 		// 读取mp3文件
-		readFile(filePath){
-			plus.io.resolveLocalFileSystemURL(filePath, function(entry) {
-				console.log("读取文件成功："+entry.name);
+		readFile(filePath) {
+			plus.io.resolveLocalFileSystemURL(filePath, function (entry) {
+				console.log("读取文件成功：" + entry.name);
 				this.requestParam.audioSrc = entry.toLocalURL();
-			}, function(e) {
-				uni.showToast({
-					title: '读取文件失败：'+e.message,
-					icon: 'none'
-				});
 			});
 		},
 	}
-  }
+}
 </script>
 
 <style lang="scss" scoped>
-.box{
-  padding: 30rpx;
-  box-sizing: border-box;
+.box {
+	padding: 30rpx;
+	box-sizing: border-box;
 }
 
-.textarea{
-	  width: 100%;
-  height: 300rpx;
-  border: 1px solid #ccc;
-  border-radius: 10rpx;
-  padding: 20rpx;
-  box-sizing: border-box;
-  font-size: 30rpx;
-  line-height: 40rpx;
-  color: #333;
-  resize: none;
+.textarea {
+	width: 100%;
+	height: 300rpx;
+	border: 1px solid #ccc;
+	border-radius: 10rpx;
+	padding: 20rpx;
+	box-sizing: border-box;
+	font-size: 30rpx;
+	line-height: 40rpx;
+	color: #333;
+	resize: none;
 }
 </style>

@@ -1,10 +1,11 @@
 <script>
 export default {
-  onLaunch() {},
-  onShow: function () { },
-  onHide: function () { },
-  methods: {
-}
+  onLaunch() {
+
+  },
+  onShow() {},
+  onHide() {},
+  methods: {}
 };
 </script>
 
