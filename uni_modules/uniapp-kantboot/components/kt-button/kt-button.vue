@@ -12,7 +12,7 @@
 			 @click="btnClick()" 
 			@getuserinfo="getuserinfo"
 			:openType="openType"
-			:disable="disable"
+			:disable="disabled"
 			class="btn" v-if="status=='none'||status=='error-to-none'||status=='to-none'"
 				:style="style"
 			>

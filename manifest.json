@@ -2,11 +2,17 @@
     "name" : "TOT",
     "appid" : "__UNI__DEF7112",
     "description" : "",
-    "versionName" : "1.0.0",
+    "versionName" : "1.0.1",
     "versionCode" : "100",
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
+        "fileAccess" : true,
+        "exposeServiceWorker" : false,
+        "useExtendedSplash" : false,
+        "compatible" : {
+            "ignoreVersion" : true //true表示忽略版本检查提示框，HBuilderX1.9.0及以上版本支持  
+        },
         "usingComponents" : true,
         "nvueStyleCompiler" : "uni-app",
         "compilerVersion" : 3,
@@ -17,7 +23,9 @@
             "delay" : 0
         },
         /* 模块配置 */
-        "modules" : {},
+        "modules" : {
+            "Camera" : {}
+        },
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -42,10 +50,9 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "dSYMs" : false,
-                "privacyDescription" : {
-                    "NSPhotoLibraryUsageDescription" : ""
-                }
+                "UIFileSharingEnabled" : true,
+                "LSSupportsOpeningDocumentsInPlace" : true,
+                "dSYMs" : true
             },
             /* SDK配置 */
             "sdkConfigs" : {
@@ -56,7 +63,8 @@
                         "hms" : {}
                     }
                 },
-                "ad" : {}
+                "ad" : {},
+                "share" : {}
             },
             "icons" : {
                 "android" : {
@@ -88,6 +96,22 @@
                         "spotlight@2x" : "unpackage/res/icons/80x80.png",
                         "spotlight@3x" : "unpackage/res/icons/120x120.png"
                     }
+                }
+            }
+        },
+        "nativePlugins" : {
+            "KJ-SpeechSynthesizer" : {
+                "__plugin_info__" : {
+                    "name" : "原生tts、离线文本转语音、支持生成音频、生成或播放状态监听、语音播报(ios)",
+                    "description" : "原生tts、离线文本转语音、支持生成音频、生成或播放状态监听、语音播报(ios) QQ群：532106269",
+                    "platforms" : "iOS",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=9286",
+                    "android_package_name" : "",
+                    "ios_bundle_id" : "com.kantboot.tot",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "9286",
+                    "parameters" : {}
                 }
             }
         }
@@ -127,3 +151,5 @@
     },
     "vueVersion" : "2"
 }
+/* SDK配置 */
+
