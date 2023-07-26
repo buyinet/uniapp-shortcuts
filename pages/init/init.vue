@@ -184,7 +184,7 @@ export default {
 		// 根据index修改播放位置
 		changeLocation(index) {
 			this.pauseIndex = index;
-			this.readContent=this.requestParam.text.substring(this.pauseIndex , this.requestParam.text.length-1);
+			this.readContent=this.requestParam.text.substring(this.pauseIndex);
 			this.stopSpeakingAtBoundary();
 			setTimeout(()=>{
 				this.init();
