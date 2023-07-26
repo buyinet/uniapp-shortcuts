@@ -13,14 +13,31 @@
 
 
 
-			<view>
+			<view
+			 class="text-view"
+			 style="font-size: 30rpx;"
+			>
 
+				<template
+				v-for="(item, index) in this.requestParam.text"
+				>
+					
 				<text
+				v-if="item!=' '"
 				@dblclick="changeLocation(index)"
-				 v-for="(item, index) in this.requestParam.text"
 					:class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
-					{{ item }}
+					{{  item }}
 				</text>
+
+				<view
+				v-if="item==' '"
+				style="width: 10rpx;display: inline-block;"
+				@dblclick="changeLocation(index)"
+				></view>
+
+				
+				</template>
+				
 			</view>
 
 
@@ -262,5 +279,12 @@ export default {
 
 .text-readed {
 	color: red;
+}
+
+.text-view{
+	// 解决ios下英文单词换行的问题
+	word-break: break-all;
+	word-wrap: break-word;
+
 }
 </style>
