@@ -15,7 +15,7 @@
 
 			<view class="text-view" style="font-size: 30rpx;">
 
-				<template v-for="(item, index) in this.requestParam.text">
+				<template v-for="(item, index) in requestParam.text">
 
 					<text v-if="item!=' '" @dblclick="changeLocation(index)"
 						:class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
@@ -106,48 +106,6 @@
 		},
 
 		methods: {
-
-			start1() {
-				const url = this.$kt.file.byPath('ios/trim.txt');
-				const fileName = 'trim.txt';
-				uni.downloadFile({
-					url: url,
-			  success: (res) => {
-			 		if (res.statusCode === 200) {
-
-							// 下载成功
-							// 将下载的临时文件保存到指定位置
-							// uni.saveFile({
-							//   tempFilePath: res.tempFilePath,
-							//   success: (fileRes) => {
-							//     // fileRes.savedFilePath 为保存后的文件路径
-							//     console.log('File saved:', fileRes.savedFilePath);
-							//     // 在这里可以将文件路径保存到应用数据中，用于后续文件管理和共享
-							//   },
-							//   fail: (err) => {
-							//     console.error('Failed to save file:', err);
-							//   }
-							// });
-							uni.share({
-								filePath: res.tempFilePath,
-								success() {
-									console.log('文件分享成功');
-								},
-								fail(err) {
-									console.error('文件分享失败', err);
-								}
-							});
-						} else {
-							console.error('Download failed:', res);
-						}
-			 	},
-			 	fail: (err) => {
-						console.error('Download error:', err);
-					}
-				});
-
-			},
-
 
 			start() {
 				this.stopSpeakingAtBoundary();
