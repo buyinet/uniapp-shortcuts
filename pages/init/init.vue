@@ -106,51 +106,55 @@
 		methods: {
 
 			start1() {
-const url=this.$kt.file.byPath('ios/trim.txt');
-			const fileName = 'trim.txt';
-			  uni.downloadFile({
-			    url: url,
-			    success: (res) => {
-			      if (res.statusCode === 200) {
-					  
-			        // 下载成功
-			        // 将下载的临时文件保存到指定位置
-			        // uni.saveFile({
-			        //   tempFilePath: res.tempFilePath,
-			        //   success: (fileRes) => {
-			        //     // fileRes.savedFilePath 为保存后的文件路径
-			        //     console.log('File saved:', fileRes.savedFilePath);
-			        //     // 在这里可以将文件路径保存到应用数据中，用于后续文件管理和共享
-			        //   },
-			        //   fail: (err) => {
-			        //     console.error('Failed to save file:', err);
-			        //   }
-			        // });
-					uni.share({
-					        filePath: res.tempFilePath,
-					        success() {
-					          console.log('文件分享成功');
-					        },
-					        fail(err) {
-					          console.error('文件分享失败', err);
-					        }
-					      });
-			      } else {
-			        console.error('Download failed:', res);
-			      }
-			    },
-			    fail: (err) => {
-			      console.error('Download error:', err);
-			    }
-			  });
+				const url = this.$kt.file.byPath('ios/trim.txt');
+				const fileName = 'trim.txt';
+				uni.downloadFile({
+					url: url,
+			  success: (res) => {
+			 		if (res.statusCode === 200) {
+
+							// 下载成功
+							// 将下载的临时文件保存到指定位置
+							// uni.saveFile({
+							//   tempFilePath: res.tempFilePath,
+							//   success: (fileRes) => {
+							//     // fileRes.savedFilePath 为保存后的文件路径
+							//     console.log('File saved:', fileRes.savedFilePath);
+							//     // 在这里可以将文件路径保存到应用数据中，用于后续文件管理和共享
+							//   },
+							//   fail: (err) => {
+							//     console.error('Failed to save file:', err);
+							//   }
+							// });
+							uni.share({
+								filePath: res.tempFilePath,
+								success() {
+									console.log('文件分享成功');
+								},
+								fail(err) {
+									console.error('文件分享失败', err);
+								}
+							});
+						} else {
+							console.error('Download failed:', res);
+						}
+			 	},
+			 	fail: (err) => {
+						console.error('Download error:', err);
+					}
+				});
 
 			},
 
 
 			start() {
-				this.readContent = this.requestParam.text;
-				this.init();
-				this.speakUtterance();
+				this.stopSpeakingAtBoundary();
+
+				setTimeout(() => {
+					this.readContent = this.requestParam.text;
+					this.init();
+					this.speakUtterance();
+				}, 100);
 			},
 
 			init() {
@@ -160,15 +164,14 @@ const url=this.$kt.file.byPath('ios/trim.txt');
 					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
 					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
 					"language": "zh-CN", //语言
-
 					"rate": 1, //速率
 					"volume": 1, //音量, 0-1 
-					"pitchMultiplier": 0.5, //声调, 0.5-2
+					"pitchMultiplier": 1, //声调, 0.5-2
 					"prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
 					"preUtteranceDelay": 0.0, //播放后的延
 					"postUtteranceDelay": 0.0 //播放前的延迟
 				}
-				
+
 
 
 				this.speakUtterance();
