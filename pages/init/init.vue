@@ -76,6 +76,8 @@
 
 	const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
 	const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件
+	
+	const innerAudioContext = uni.createInnerAudioContext();
 
 	export default {
 		data() {
@@ -161,13 +163,13 @@
 
 				var dic = {
 					"speechString": this.readContent, //文本
-					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
-					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
+					// "usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
+					// "mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
 					"language": "zh-CN", //语言
 					"rate": 1, //速率
 					"volume": 1, //音量, 0-1 
 					"pitchMultiplier": 1, //声调, 0.5-2
-					"prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
+					// "prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
 					"preUtteranceDelay": 0.0, //播放后的延
 					"postUtteranceDelay": 0.0 //播放前的延迟
 				}
@@ -206,7 +208,6 @@
 						console.log("Write开始播放/重新生成")
 					} else if (res.type == "didFinishSpeechUtterance") {
 						console.log("Write完成播放/生成")
-						const innerAudioContext = uni.createInnerAudioContext();
 						innerAudioContext.autoplay = true;
 						innerAudioContext.src = this.filePath;
 						innerAudioContext.onPlay(() => {
