@@ -55,15 +55,18 @@
 				v-if="isSpeak"
 				style="text-align: center;"
 				>
-				<kt-button type="primary"
+				<view type="primary"
 				 v-if="isStop"
-				 @click="changeLocation(requestParam.textIndex)">继续播放</kt-button>
+				 class="o-button"
+				 @click="changeLocation(requestParam.textIndex)">继续播放</view>
 				<view style="height: 20rpx;"></view>
 				
 				
-				<kt-button type="primary"
+				<view type="primary"
 				 v-if="!isStop"
-				@click="stopSpeakingAtBoundary">停止播放</kt-button>
+				 class="o-button"
+
+				@click="stopSpeakingAtBoundary">停止播放</view>
 				<view style="height: 20rpx;"></view>
 
 				</view>
@@ -223,7 +226,7 @@
 
 
 				KJSpeechSynthesizer.init(dic, (res) => {
-					console.log("init:" + JSON.stringify(res));
+					// console.log("init:" + JSON.stringify(res));
 					if (res.type == "init") {
 						console.log("初始化完成")
 					} else if (res.type == "didStartSpeechUtterance") {
