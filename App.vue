@@ -6,6 +6,11 @@
 	export default {
 		onLaunch() {
 			// #ifdef APP-PLUS
+			uni.$on("toReadFile",()=>{
+				this.select_v2();	
+			});
+			
+			return false
 			this.select_v2();
 			return false;
 			

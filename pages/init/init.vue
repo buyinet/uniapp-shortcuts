@@ -1,14 +1,20 @@
 <template>
 	<view class="content">
 		<kt-nav-bar
+		v-if="false"
 		id="kt-nav-bar"
 		title="TOT阅读器"
 		></kt-nav-bar>
+		<kt-status-bar-height
+		id="kt-nav-bar"
+		></kt-status-bar-height> 
+		
 		
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
 		">
-
+	
+	
 			<textarea 
 			v-if="!isSpeak"
 			class="textarea" maxlength="-1"
@@ -16,7 +22,6 @@
 					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
 				}"
 				v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
-
 
 			<scroll-view 
 			:style="{
@@ -50,25 +55,16 @@
 				v-if="isSpeak"
 				style="text-align: center;"
 				>
-				<u-icon
-				v-if="!isStop"
-				@click="toStop()"
-				style="
-				margin-left:calc(710rpx / 2 - 80rpx / 2)
-				"
-				name="pause-circle"
-				size="80rpx"
-				></u-icon>
-
-				<u-icon
-				v-if="isStop"
-				@click="toContinue()"
-				style="
-				margin-left:calc(710rpx / 2 - 80rpx / 2)
-				"
-				name="play-circle"
-				size="80rpx"
-				></u-icon>
+				<kt-button type="primary"
+				 v-if="isStop"
+				 @click="changeLocation(requestParam.textIndex)">继续播放</kt-button>
+				<view style="height: 20rpx;"></view>
+				
+				
+				<kt-button type="primary"
+				 v-if="!isStop"
+				@click="stopSpeakingAtBoundary">停止播放</kt-button>
+				<view style="height: 20rpx;"></view>
 
 				</view>
 				<view style="height: 20rpx;"></view>
@@ -87,7 +83,9 @@
 				返回编辑
 				</view>
 				<view style="height: 20rpx;"></view>
-				<view class="o-button">
+				<view
+				 @click="toReadFile()"
+				 class="o-button">
 					读取文件
 				</view>
 			</view>
@@ -152,6 +150,10 @@
 		},
 
 		methods: {
+			
+			toReadFile(){
+				uni.$emit("toReadFile");
+			},
 
 			getHeight() {
 				setTimeout(() => {
@@ -193,12 +195,10 @@
 			},
 
 			toStop() {
-				this.isStop = true;
 				this.stopSpeakingAtBoundary();
 			},
 
 			toContinue() {
-				this.isStop = false;
 				this.continueSpeaking();
 			},
 
@@ -280,7 +280,13 @@
 				setTimeout(() => {
 					this.init();
 					this.speakUtterance();
+					this.isStop=false;
+					setTimeout(()=>{
+						this.$forceUpdate();
+					},100);
 				}, 100);
+				
+
 
 			},
 
@@ -307,6 +313,7 @@
 					"boundary": 0
 				}, (res) => {
 					console.log("stopSpeakingAtBoundary:" + JSON.stringify(res))
+					this.isStop=true;
 				});
 			},
 			writeUtterance() {
