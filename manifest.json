@@ -107,6 +107,20 @@
                     "pid" : "9286",
                     "parameters" : {}
                 }
+            },
+            "KJ-File" : {
+                "__plugin_info__" : {
+                    "name" : "文件选取 支持多选单选、是否显示后缀名、模式选择、保存文件到文件管理器(ios) - [Trial version,only can used in custom base]",
+                    "description" : "系统文件选择选取(文件管理器 )文件选取 支持多选单选、是否显示后缀名、模式选择、保存文件到文件管理器(ios11) QQ群：1059236430 可接单 离线包：单价X10  源码：单价X15",
+                    "platforms" : "iOS",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=3298",
+                    "android_package_name" : "",
+                    "ios_bundle_id" : "",
+                    "isCloud" : true,
+                    "bought" : 0,
+                    "pid" : "3298",
+                    "parameters" : {}
+                }
             }
         }
     },

@@ -34,6 +34,34 @@
 			<view style="height: 200rpx;"></view>
 			<kt-button type="primary" @click="start()">开始播放</kt-button>
 
+			<view style="height: 200rpx;"></view>
+			<kt-button type="primary" @click="init">初始化</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="speakUtterance">开始播放/重新生成音频</kt-button>
+			<view style="height: 20rpx;"></view>
+			<kt-button type="primary" @click="pauseSpeakingAtBoundary">暂停播放/生成</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="continueSpeaking">继续播放/生成</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="stopSpeakingAtBoundary">停止播放/生成</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="writeUtterance">生成音频到本地路径</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="isSpeaking">是否在播放</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="isPaused">是否暂停播放</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="start1()">分享</kt-button>
+			<view style="height: 20rpx;"></view>
+
+			<kt-button type="primary" @click="getSpeechVoicesLanguage">获取支持播放的语音</kt-button>
 		</view>
 	</view>
 </template>
