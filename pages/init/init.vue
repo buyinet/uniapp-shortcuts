@@ -1,19 +1,30 @@
 <template>
 	<view class="content">
-		<view :style="'height:' + statusBarHeight + 'px'"></view>
+		<kt-nav-bar
+		id="kt-nav-bar"
+		title="TOT阅读器"
+		></kt-nav-bar>
+		
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
 		">
 
-			<view style="height: 200rpx;"></view>
-
-
-			<textarea class="textarea" maxlength="-1" style="min-height: 200rpx;" :auto-height="true"
+			<textarea 
+			v-if="!isSpeak"
+			class="textarea" maxlength="-1"
+				:style="{
+					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
+				}"
 				v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
 
 
-
-			<view class="text-view" style="font-size: 30rpx;">
+			<scroll-view 
+			:style="{
+					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
+				}"
+			scroll-y
+			v-if="isSpeak"
+			 class="text-view" style="font-size: 30rpx;">
 
 				<template v-for="(item, index) in requestParam.text">
 
@@ -28,11 +39,58 @@
 
 				</template>
 
+			</scroll-view>
+			
+			<view id="button-box"
+			class="button-box"
+			>
+
+				<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
+				<view
+				v-if="isSpeak"
+				style="text-align: center;"
+				>
+				<u-icon
+				v-if="!isStop"
+				@click="toStop()"
+				style="
+				margin-left:calc(710rpx / 2 - 80rpx / 2)
+				"
+				name="pause-circle"
+				size="80rpx"
+				></u-icon>
+
+				<u-icon
+				v-if="isStop"
+				@click="toContinue()"
+				style="
+				margin-left:calc(710rpx / 2 - 80rpx / 2)
+				"
+				name="play-circle"
+				size="80rpx"
+				></u-icon>
+
+				</view>
+				<view style="height: 20rpx;"></view>
+				
+				<view
+				v-if="!isSpeak"
+				class="o-button"
+				@click="startPlay()"
+				>
+					开始播放
+				</view>
+				<view
+				v-if="false&isSpeak"
+				@click="toEdit()"
+				class="o-button">
+				返回编辑
+				</view>
+				<view style="height: 20rpx;"></view>
+				<view class="o-button">
+					读取文件
+				</view>
 			</view>
-
-
-			<view style="height: 200rpx;"></view>
-			<kt-button type="primary" @click="start()">开始播放</kt-button>
 
 		</view>
 	</view>
@@ -45,18 +103,20 @@
 		androidPlay,
 		audioPlay
 	} from "../../js_sdk/wzc-speechSynthesis/speechSynthesis.js";
-
-	const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
-	const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件
 	
+	// #ifdef APP-PLUS
+	const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
+	const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件	
 	const innerAudioContext = uni.createInnerAudioContext();
+	// #endif
 
 	export default {
 		data() {
 			return {
-				statusBarHeight: 0,
 				title: 'Hello',
+				// #ifdef APP-PLUS
 				filePath: plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf"),
+				// #endif
 				requestParam: {
 					text: "",
 					textIndex: 0
@@ -69,29 +129,77 @@
 				// 暂停的位置
 				pauseIndex: 0,
 
+				ktNavBarHeight: 0,
+
+				buttonBoxHeight: 0,
+
+				isSpeak: false,
+
+				isStop: false,
+
+
 			}
 		},
 
 		mounted() {
 
-			this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
 			uni.$on("fileRead",(content)=>{
 				this.requestParam.text=content;
 			});
-			
+
+			this.getHeight();
 			
 		},
 
 		methods: {
 
-			start() {
+			getHeight() {
+				setTimeout(() => {
+					this.getKtNavBarHeight();
+					this.getButtonBoxHeight();
+				}, 300);
+			},
+			getKtNavBarHeight() {
+				uni.createSelectorQuery().in(this).select('#kt-nav-bar').boundingClientRect((data) => {
+					this.ktNavBarHeight = data.height;
+				}).exec();
+			},
+
+			getButtonBoxHeight() {
+				uni.createSelectorQuery().in(this).select('#button-box').boundingClientRect((data) => {
+					this.buttonBoxHeight = data.height;
+				}).exec();
+			},
+
+			
+
+			startPlay() {
+				this.isSpeak = true;
+
 				this.stopSpeakingAtBoundary();
 
 				setTimeout(() => {
 					this.readContent = this.requestParam.text;
 					this.init();
 					this.speakUtterance();
+					this.isStop = false;
+					this.getHeight();
 				}, 100);
+			},
+
+			toEdit() {
+				this.isSpeak = false;
+				this.stopSpeakingAtBoundary();
+			},
+
+			toStop() {
+				this.isStop = true;
+				this.stopSpeakingAtBoundary();
+			},
+
+			toContinue() {
+				this.isStop = false;
+				this.continueSpeaking();
 			},
 
 			init() {
@@ -246,7 +354,6 @@
 	.textarea {
 		width: 100%;
 		height: 300rpx;
-		border: 1px solid #ccc;
 		border-radius: 10rpx;
 		padding: 20rpx;
 		box-sizing: border-box;
@@ -270,4 +377,34 @@
 		word-wrap: break-word;
 
 	}
+
+	.button-box {
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+		left: 0;
+		background-color: #fff;
+		padding: 20rpx;
+		box-sizing: border-box;
+
+		border-top: 1px solid #f0f0f0;
+		padding-top: 20rpx;
+		box-shadow: 0 0 30rpx #f0f0f0;
+		
+		.o-button{
+			width: 100%;
+			background-color: #333;
+			border-radius: 10rpx;
+			color: #fff;
+			text-align: center;
+			font-size: 30rpx;
+			padding: 25rpx 0 25rpx 0;
+		}
+
+		.o-button:active{
+			background-color: #666;
+		}
+	
+	}
+	
 </style>

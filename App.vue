@@ -1,11 +1,14 @@
 <script>
-import file from './uni_modules/uniapp-kantboot/libs/file';
+	// #ifdef APP-PLUS
+	import file from './uni_modules/uniapp-kantboot/libs/file';
 	const KJFile = uni.requireNativePlugin('KJ-File');
-
+	// #endif
 	export default {
 		onLaunch() {
+			// #ifdef APP-PLUS
 			this.select_v2();
 			return false;
+			
 			// 获取文档目录路径
 			const docDir = plus.io.convertLocalFileSystemURL('_doc/');
 
@@ -52,10 +55,9 @@ import file from './uni_modules/uniapp-kantboot/libs/file';
 				this.exportToService("fang.txt");
 				// this.copyToOtherPath("My iPhone","fang.txt",path);
 			}, 3000);
-
-
-
-
+			
+			
+			// #endif
 
 
 		},
@@ -101,6 +103,7 @@ import file from './uni_modules/uniapp-kantboot/libs/file';
 				// 复制文件到目标路径
 				var isCopy = plus.ios.invoke(fileManager, "copyItemAtPath:toPath:error:", filePath, copyPathName, null);
 				console.log("isCopy:" + isCopy);
+				
 			},
 			select() {
 				/**
