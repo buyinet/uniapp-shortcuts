@@ -231,10 +231,12 @@
 						console.log("初始化完成")
 					} else if (res.type == "didStartSpeechUtterance") {
 						console.log("开始播放/重新生成")
-					} else if (res.type == "didFinishSpeechUtterance") {
+					} 
+					else if (res.type == "didFinishSpeechUtterance") {
 						console.log("完成播放/生成")
 						//this.init();
-					} else if (res.type == "didPauseSpeechUtterance") {
+					} 
+					else if (res.type == "didPauseSpeechUtterance") {
 						console.log("暂停播放/生成")
 					} else if (res.type == "didContinueSpeechUtterance") {
 						console.log("继续播放/生成")
