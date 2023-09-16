@@ -59,7 +59,7 @@
 				</view>
 				
 				<view style="height: 20rpx;"></view>
-				<view
+				<view v-if="!isSpeak"
 				 @click="kuaijieRun()"
 				 class="o-button">
 					GPT快捷指令
@@ -73,12 +73,20 @@
 					粘贴剪切板
 				</view>
 				
+				<view v-if="!isMute" @click="toMute()" class="o-button">
+					静音
+				</view>
+				
+				<view v-if="isMute" @click="toMute()" class="o-button">
+					声音
+				</view>
 				
 				<view v-if="isSpeak" @click="toEdit()" class="o-button">
 					返回编辑
 				</view>
+				
 				<view style="height: 20rpx;"></view>
-				<view @click="toReadFile()" class="o-button">
+				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view>
 				
@@ -127,6 +135,7 @@
 				buttonBoxHeight: 0,
 
 				isSpeak: false,
+				isMute: false,
 
 				isStop: false,
 
@@ -145,6 +154,13 @@
 		},
 
 		methods: {
+			toMute() {
+				if (!this.isMute) {
+				this.isMute = true;} else {
+					this.isMute = false;
+				}
+				
+			},
 			copyClip() {
 				// console.log("-----");
 				uni.getClipboardData({
@@ -211,6 +227,10 @@
 			toEdit() {
 				this.isSpeak = false;
 				this.stopSpeakingAtBoundary();
+				setTimeout(() => {
+					this.copyClip();
+				}, 100);
+				
 			},
 
 			toStop() {
@@ -298,7 +318,8 @@
 				this.stopSpeakingAtBoundary();
 				setTimeout(() => {
 					this.init();
-					this.speakUtterance();
+					if (!this.isMute){
+					this.speakUtterance();}
 					this.isStop = false;
 					setTimeout(() => {
 						this.$forceUpdate();
