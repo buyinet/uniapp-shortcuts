@@ -57,6 +57,16 @@
 				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
 					开始播放
 				</view>
+				
+				<view style="height: 20rpx;"></view>
+				<view
+				 v-if="!isSpeak"
+				 @click="kuaijieRun()"
+				 class="o-button">
+					读取kj
+				</view>
+				
+				
 				<view v-if="isSpeak" @click="toEdit()" class="o-button">
 					返回编辑
 				</view>
@@ -64,6 +74,8 @@
 				<view @click="toReadFile()" class="o-button">
 					读取文件
 				</view>
+				
+				
 			</view>
 
 		</view>
@@ -126,6 +138,9 @@
 		},
 
 		methods: {
+			kuaijieRun(){
+				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('下一首')}`);
+			},
 			getItemAtIndex(index) {
 			        // return this.requestParam.text[index * 3];
 					return this.requestParam.text.substring(3*index,3*index+3);
@@ -164,11 +179,12 @@
 					this.readContent = this.requestParam.text;
 					this.init();
 					// this.speakUtterance();
+					this.changeLocation(0);
 					this.isStop = false;
 					this.getHeight();
 				}, 100);
 			},
-
+			
 			toEdit() {
 				this.isSpeak = false;
 				this.stopSpeakingAtBoundary();
