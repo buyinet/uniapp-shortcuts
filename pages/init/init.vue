@@ -1,94 +1,67 @@
 <template>
 	<view class="content">
-		<kt-nav-bar
-		v-if="false"
-		id="kt-nav-bar"
-		title="TOT阅读器"
-		></kt-nav-bar>
-		<kt-status-bar-height
-		id="kt-nav-bar"
-		></kt-status-bar-height> 
-		
-		
+		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
+		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
+
+
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
 		">
-	
-	
-			<textarea 
-			v-if="!isSpeak"
-			class="textarea" maxlength="-1"
-				:style="{
+
+
+			<textarea v-if="!isSpeak" class="textarea" maxlength="-1" :style="{
 					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
-				}"
-				v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
+				}" v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
 
-			<scroll-view 
-			:style="{
+			<scroll-view :style="{
 					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
-				}"
-			scroll-y
-			v-if="isSpeak"
-			 class="text-view" style="font-size: 30rpx;">
-
-				<template v-for="(item, index) in requestParam.text">
-
-					<text v-if="item!=' '" @dblclick="changeLocation(index)"
-						:class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
-						{{ item }}
-					</text>
-
-					<view v-if="item==' '" style="width: 10rpx;display: inline-block;"
-						@dblclick="changeLocation(index)"></view>
+				}" scroll-y v-if="isSpeak" class="text-view" style="font-size: 30rpx;">
 
 
-				</template>
+<template v-for="index in Math.ceil(requestParam.text.length / 3)">
+    
+    <!-- Use a computed value to get the item at the current third index -->
+    <template v-if="getItemAtIndex(index)">
+
+        <text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
+            :class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
+            {{ getItemAtIndex(index) }}
+        </text>
+
+        <view v-if="getItemAtIndex(index) == '   '" 
+		style="width: 10rpx;display: inline-block;"
+            @dblclick="changeLocation(index * 3)"></view>
+
+    </template>
+
+</template>
+
 
 			</scroll-view>
-			
-			<view id="button-box"
-			class="button-box"
-			>
+
+			<view id="button-box" class="button-box">
 
 				<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
-				<view
-				v-if="isSpeak"
-				style="text-align: center;"
-				>
-				<view type="primary"
-				 v-if="isStop"
-				 class="o-button"
-				 @click="changeLocation(requestParam.textIndex)">继续播放</view>
-				<view style="height: 20rpx;"></view>
-				
-				
-				<view type="primary"
-				 v-if="!isStop"
-				 class="o-button"
+				<view v-if="isSpeak" style="text-align: center;">
+					<view type="primary" v-if="isStop" class="o-button" @click="changeLocation(requestParam.textIndex)">
+						继续播放</view>
+					<view style="height: 20rpx;"></view>
 
-				@click="stopSpeakingAtBoundary">停止播放</view>
-				<view style="height: 20rpx;"></view>
+
+					<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">停止播放</view>
+					<view style="height: 20rpx;"></view>
 
 				</view>
 				<view style="height: 20rpx;"></view>
-				
-				<view
-				v-if="!isSpeak"
-				class="o-button"
-				@click="startPlay()"
-				>
+
+				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
 					开始播放
 				</view>
-				<view
-				v-if="false&isSpeak"
-				@click="toEdit()"
-				class="o-button">
-				返回编辑
+				<view v-if="isSpeak" @click="toEdit()" class="o-button">
+					返回编辑
 				</view>
 				<view style="height: 20rpx;"></view>
-				<view
-				 @click="toReadFile()"
-				 class="o-button">
+				<view @click="toReadFile()" class="o-button">
 					读取文件
 				</view>
 			</view>
@@ -104,7 +77,7 @@
 		androidPlay,
 		audioPlay
 	} from "../../js_sdk/wzc-speechSynthesis/speechSynthesis.js";
-	
+
 	// #ifdef APP-PLUS
 	const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
 	const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件	
@@ -144,17 +117,21 @@
 
 		mounted() {
 
-			uni.$on("fileRead",(content)=>{
-				this.requestParam.text=content;
+			uni.$on("fileRead", (content) => {
+				this.requestParam.text = content;
 			});
 
 			this.getHeight();
-			
+
 		},
 
 		methods: {
-			
-			toReadFile(){
+			getItemAtIndex(index) {
+			        // return this.requestParam.text[index * 3];
+					return this.requestParam.text.substring(3*index,3*index+3);
+			    }, 
+
+			toReadFile() {
 				uni.$emit("toReadFile");
 			},
 
@@ -176,7 +153,7 @@
 				}).exec();
 			},
 
-			
+
 
 			startPlay() {
 				this.isSpeak = true;
@@ -186,7 +163,7 @@
 				setTimeout(() => {
 					this.readContent = this.requestParam.text;
 					this.init();
-					this.speakUtterance();
+					// this.speakUtterance();
 					this.isStop = false;
 					this.getHeight();
 				}, 100);
@@ -222,7 +199,7 @@
 
 
 
-				this.speakUtterance();
+				// this.speakUtterance();
 
 
 				KJSpeechSynthesizer.init(dic, (res) => {
@@ -231,12 +208,10 @@
 						console.log("初始化完成")
 					} else if (res.type == "didStartSpeechUtterance") {
 						console.log("开始播放/重新生成")
-					} 
-					else if (res.type == "didFinishSpeechUtterance") {
+					} else if (res.type == "didFinishSpeechUtterance") {
 						console.log("完成播放/生成")
 						//this.init();
-					} 
-					else if (res.type == "didPauseSpeechUtterance") {
+					} else if (res.type == "didPauseSpeechUtterance") {
 						console.log("暂停播放/生成")
 					} else if (res.type == "didContinueSpeechUtterance") {
 						console.log("继续播放/生成")
@@ -285,12 +260,12 @@
 				setTimeout(() => {
 					this.init();
 					this.speakUtterance();
-					this.isStop=false;
-					setTimeout(()=>{
+					this.isStop = false;
+					setTimeout(() => {
 						this.$forceUpdate();
-					},100);
+					}, 100);
 				}, 100);
-				
+
 
 
 			},
@@ -318,7 +293,7 @@
 					"boundary": 0
 				}, (res) => {
 					console.log("stopSpeakingAtBoundary:" + JSON.stringify(res))
-					this.isStop=true;
+					this.isStop = true;
 				});
 			},
 			writeUtterance() {
@@ -402,8 +377,8 @@
 		border-top: 1px solid #f0f0f0;
 		padding-top: 20rpx;
 		box-shadow: 0 0 30rpx #f0f0f0;
-		
-		.o-button{
+
+		.o-button {
 			width: 100%;
 			background-color: #333;
 			border-radius: 10rpx;
@@ -413,10 +388,9 @@
 			padding: 25rpx 0 25rpx 0;
 		}
 
-		.o-button:active{
+		.o-button:active {
 			background-color: #666;
 		}
-	
+
 	}
-	
 </style>
