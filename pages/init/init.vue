@@ -60,10 +60,9 @@
 				
 				<view style="height: 20rpx;"></view>
 				<view
-				 v-if="!isSpeak"
 				 @click="kuaijieRun()"
 				 class="o-button">
-					读取kj
+					GPT快捷指令
 				</view>
 				
 				<view style="height: 20rpx;"></view>
@@ -153,10 +152,17 @@
 						// console.log(res,"======");
 						this.requestParam.text = res.data;
 					}
-				})
+				});
+				setTimeout(() => {
+					this.startPlay();
+				}, 100);
+				setTimeout(() => {
+					this.kuaijieRun();
+				}, 100);
+				
 			},
 			kuaijieRun(){
-				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('下一首')}`);
+				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
 			},
 			getItemAtIndex(index) {
 			        // return this.requestParam.text[index * 3];
