@@ -66,6 +66,14 @@
 					读取kj
 				</view>
 				
+				<view style="height: 20rpx;"></view>
+				<view
+				 v-if="!isSpeak"
+				 @click="copyClip()"
+				 class="o-button">
+					粘贴剪切板
+				</view>
+				
 				
 				<view v-if="isSpeak" @click="toEdit()" class="o-button">
 					返回编辑
@@ -138,6 +146,15 @@
 		},
 
 		methods: {
+			copyClip() {
+				// console.log("-----");
+				uni.getClipboardData({
+					success: (res)=>{
+						// console.log(res,"======");
+						this.requestParam.text = res.data;
+					}
+				})
+			},
 			kuaijieRun(){
 				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('下一首')}`);
 			},
