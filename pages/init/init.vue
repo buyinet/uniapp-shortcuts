@@ -189,12 +189,15 @@
 									this.oldClip = res.data;
 
 									if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
-										this.clipList.push(res.data+"\n");
+										this.clipList.push(res.data+"\n\n");
 										console.log(this.clipList[this.clipList.length - 1]);
+										if (this.clipList.length <=1) {
+											this.kuaijieRun();
+										}
 										
 									}
 
-									if (this.clipList.length >=2||countNum>=3) {
+									if (this.clipList.length >=2||countNum>=10) {
 										this.clipStr=""
 										for(var i=0;i<this.clipList.length;i++){
 											this.clipStr+=this.clipList[i];
@@ -209,14 +212,12 @@
 										clearInterval(runInterval);
 										return false;
 									} 
-									this.kuaijieRun();
-									
-
+							
 								}
 							}
 						});
 
-					}, 30000);
+					}, 10000);
 					
 					
 
@@ -252,7 +253,6 @@
 					this.buttonBoxHeight = data.height;
 				}).exec();
 			},
-
 
 
 			startPlay() {
