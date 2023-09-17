@@ -18,23 +18,22 @@
 				}" scroll-y v-if="isSpeak" class="text-view" style="font-size: 30rpx;">
 
 
-<template v-for="index in Math.ceil(requestParam.text.length / 3)">
-    
-    <!-- Use a computed value to get the item at the current third index -->
-    <template v-if="getItemAtIndex(index)">
+				<template v-for="index in Math.ceil(requestParam.text.length / 3)">
 
-        <text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
-            :class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
-            {{ getItemAtIndex(index) }}
-        </text>
+					<!-- Use a computed value to get the item at the current third index -->
+					<template v-if="getItemAtIndex(index)">
 
-        <view v-if="getItemAtIndex(index) == '   '" 
-		style="width: 10rpx;display: inline-block;"
-            @dblclick="changeLocation(index * 3)"></view>
+						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
+							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
+							{{ getItemAtIndex(index) }}
+						</text>
 
-    </template>
+						<view v-if="getItemAtIndex(index) == '   '" style="width: 10rpx;display: inline-block;"
+							@dblclick="changeLocation(index * 3)"></view>
 
-</template>
+					</template>
+
+				</template>
 
 
 			</scroll-view>
@@ -57,40 +56,35 @@
 				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
 					开始播放
 				</view>
-				
+
 				<view style="height: 20rpx;"></view>
-				<view v-if="!isSpeak"
-				 @click="kuaijieRun()"
-				 class="o-button">
+				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
 					GPT快捷指令
 				</view>
-				
+
 				<view style="height: 20rpx;"></view>
-				<view
-				 v-if="!isSpeak"
-				 @click="copyClip()"
-				 class="o-button">
+				<view v-if="!isSpeak" @click="copyClip()" class="o-button">
 					粘贴剪切板
 				</view>
-				
+
 				<view v-if="!isMute" @click="toMute()" class="o-button">
 					静音
 				</view>
-				
+
 				<view v-if="isMute" @click="toMute()" class="o-button">
 					声音
 				</view>
-				
+
 				<view v-if="isSpeak" @click="toEdit()" class="o-button">
 					返回编辑
 				</view>
-				
+
 				<view style="height: 20rpx;"></view>
 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view>
-				
-				
+
+
 			</view>
 
 		</view>
@@ -139,6 +133,11 @@
 
 				isStop: false,
 
+				oldClip: "",
+
+				clipList: [],
+				
+				clipStr:""
 
 			}
 		},
@@ -156,34 +155,81 @@
 		methods: {
 			toMute() {
 				if (!this.isMute) {
-				this.isMute = true;} else {
+					this.isMute = true;
+				} else {
 					this.isMute = false;
 				}
-				
+
 			},
-			copyClip() {
-				// console.log("-----");
+
+			copyClipFront() {
 				uni.getClipboardData({
-					success: (res)=>{
-						// console.log(res,"======");
+					success: (res) => {
+						this.oldClip = res.data;
 						this.requestParam.text = res.data;
 					}
 				});
+			},
+
+			copyClip() {
+				this.copyClipFront();
+
 				setTimeout(() => {
 					this.startPlay();
 				}, 100);
 				setTimeout(() => {
 					this.kuaijieRun();
-				}, 100);
+					var countNum=0;
 				
+					var runInterval = setInterval(() => {
+						countNum++;
+						uni.getClipboardData({
+							success: (res) => {
+								if (this.oldClip != res.data) {
+									this.oldClip = res.data;
+
+									if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
+										this.clipList.push(res.data+"\n");
+										console.log(this.clipList[this.clipList.length - 1]);
+										
+									}
+
+									if (this.clipList.length >=2||countNum>=3) {
+										this.clipStr=""
+										for(var i=0;i<this.clipList.length;i++){
+											this.clipStr+=this.clipList[i];
+										}
+										this.clipList=[];
+										this.$forceUpdate();
+										uni.setClipboardData({
+											data:this.clipStr
+										})
+										
+										
+										clearInterval(runInterval);
+										return false;
+									} 
+									this.kuaijieRun();
+									
+
+								}
+							}
+						});
+
+					}, 30000);
+					
+					
+
+				}, 100);
+
 			},
-			kuaijieRun(){
+			kuaijieRun() {
 				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
 			},
 			getItemAtIndex(index) {
-			        // return this.requestParam.text[index * 3];
-					return this.requestParam.text.substring(3*index,3*index+3);
-			    }, 
+				// return this.requestParam.text[index * 3];
+				return this.requestParam.text.substring(3 * index, 3 * index + 3);
+			},
 
 			toReadFile() {
 				uni.$emit("toReadFile");
@@ -223,14 +269,14 @@
 					this.getHeight();
 				}, 100);
 			},
-			
+
 			toEdit() {
 				this.isSpeak = false;
 				this.stopSpeakingAtBoundary();
 				setTimeout(() => {
 					this.copyClip();
 				}, 100);
-				
+
 			},
 
 			toStop() {
@@ -318,8 +364,9 @@
 				this.stopSpeakingAtBoundary();
 				setTimeout(() => {
 					this.init();
-					if (!this.isMute){
-					this.speakUtterance();}
+					if (!this.isMute) {
+						this.speakUtterance();
+					}
 					this.isStop = false;
 					setTimeout(() => {
 						this.$forceUpdate();
