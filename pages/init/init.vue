@@ -177,51 +177,52 @@
 				setTimeout(() => {
 					this.startPlay();
 				}, 100);
-				setTimeout(() => {
-					this.kuaijieRun();
-					var countNum=0;
 				
-					var runInterval = setInterval(() => {
-						countNum++;
-						uni.getClipboardData({
-							success: (res) => {
-								if (this.oldClip != res.data) {
-									this.oldClip = res.data;
+				// setTimeout(() => {
+				// 	this.kuaijieRun();
+				// 	var countNum=0;
+				
+				// 	var runInterval = setInterval(() => {
+				// 		countNum++;
+				// 		uni.getClipboardData({
+				// 			success: (res) => {
+				// 				if (this.oldClip != res.data) {
+				// 					this.oldClip = res.data;
 
-									if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
-										this.clipList.push(res.data+"\n\n");
-										console.log(this.clipList[this.clipList.length - 1]);
-										if (this.clipList.length <=1) {
-											this.kuaijieRun();
-										}
+				// 					if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
+				// 						this.clipList.push(res.data+"\n\n");
+				// 						console.log(this.clipList[this.clipList.length - 1]);
+				// 						if (this.clipList.length <=1) {
+				// 							this.kuaijieRun();
+				// 						}
 										
-									}
+				// 					}
 
-									if (this.clipList.length >=2||countNum>=10) {
-										this.clipStr=""
-										for(var i=0;i<this.clipList.length;i++){
-											this.clipStr+=this.clipList[i];
-										}
-										this.clipList=[];
-										this.$forceUpdate();
-										uni.setClipboardData({
-											data:this.clipStr
-										})
+				// 					if (this.clipList.length >=2||countNum>=10) {
+				// 						this.clipStr=""
+				// 						for(var i=0;i<this.clipList.length;i++){
+				// 							this.clipStr+=this.clipList[i];
+				// 						}
+				// 						this.clipList=[];
+				// 						this.$forceUpdate();
+				// 						uni.setClipboardData({
+				// 							data:this.clipStr
+				// 						})
 										
 										
-										clearInterval(runInterval);
-										return false;
-									} 
+				// 						clearInterval(runInterval);
+				// 						return false;
+				// 					} 
 							
-								}
-							}
-						});
+				// 				}
+				// 			}
+				// 		});
 
-					}, 10000);
+				// 	}, 5000);
 					
 					
 
-				}, 100);
+				// }, 100);
 
 			},
 			kuaijieRun() {
@@ -273,9 +274,9 @@
 			toEdit() {
 				this.isSpeak = false;
 				this.stopSpeakingAtBoundary();
-				setTimeout(() => {
-					this.copyClip();
-				}, 100);
+				// setTimeout(() => {
+				// 	this.copyClip();
+				// }, 100);
 
 			},
 
