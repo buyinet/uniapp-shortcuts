@@ -12,7 +12,6 @@
 		box-sizing: border-box;
 		">
 
-{{"requestParam.text.length:"+requestParam.text.length}}
 			<textarea v-if="!isSpeak" class="textarea" maxlength="-1" :style="{
 					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
 				}" v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
@@ -24,13 +23,13 @@
 
 				<template v-for="index in Math.ceil(requestParam.text.length / 3)">
 						
+						
+					<!-- Use a computed value to get the item at the current third index -->
+					<template v-if="getItemAtIndex(index)">
 						<text v-if="index==1" @dblclick="changeLocation(index * 3)"
 							:class="requestParam.textIndex>0 ? 'text-def text-readed' : 'text-def'">
 							{{ requestParam.text.substring(0,3) }}
 						</text>
-						
-					<!-- Use a computed value to get the item at the current third index -->
-					<template v-if="getItemAtIndex(index)">
 						
 						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
 							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
