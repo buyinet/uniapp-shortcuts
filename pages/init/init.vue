@@ -23,14 +23,15 @@
 
 
 				<template v-for="index in Math.ceil(requestParam.text.length / 3)">
-
+						
+						<text v-if="index==1" @dblclick="changeLocation(index * 3)"
+							:class="requestParam.textIndex>0 ? 'text-def text-readed' : 'text-def'">
+							{{ requestParam.text.substring(0,3) }}
+						</text>
+						
 					<!-- Use a computed value to get the item at the current third index -->
 					<template v-if="getItemAtIndex(index)">
 						
-						<text v-if="index==0" :class="requestParam.textIndex > 0 ? 'text-def text-readed' : 'text-def'">
-							{{requestParam.text.substring(0,2)}}
-						</text>
-
 						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
 							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
 							{{ getItemAtIndex(index) }}
@@ -264,6 +265,7 @@
 			},
 			getItemAtIndex(index) {
 				// return this.requestParam.text[index * 3];
+				
 				return this.requestParam.text.substring(3 * index, 3 * index + 3);
 			},
 
