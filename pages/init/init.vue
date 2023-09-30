@@ -26,6 +26,10 @@
 
 					<!-- Use a computed value to get the item at the current third index -->
 					<template v-if="getItemAtIndex(index)">
+						
+						<text v-if="index==0" :class="requestParam.textIndex > 0 ? 'text-def text-readed' : 'text-def'">
+							{{requestParam.text.substring(0,2)}}
+						</text>
 
 						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
 							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
@@ -52,6 +56,7 @@
 			padding: 20rpx;
 			box-sizing: border-box;
 			"
+			v-if="isSpeak"
 			:style="{
 				bottom: 'calc('+buttonBoxHeight+'px + 40rpx)'
 			}"
@@ -59,12 +64,12 @@
 			>
 				<u-row>
 					<u-col :span="6">
-						<view class="o-button">
+						<view class="o-button" @click="prePage">
 						上一页
 						</view>
 					</u-col>
 					<u-col :span="6">
-						<view class="o-button">
+						<view class="o-button" @click="nextPage">
 						下一页
 						</view>
 					</u-col>				
@@ -177,7 +182,7 @@
 		mounted() {
 
 			uni.$on("fileRead", (content) => {
-				this.pageArr = this.pageSplit(content, 3000);
+				this.pageArr = this.pageSplit(content, 500);
 				this.requestParam.text = this.pageArr[0];
 				this.pageArrIndex = 0;
 			});
@@ -191,14 +196,26 @@
 			prePage() {
 				if (this.pageArrIndex > 0) {
 					this.pageArrIndex--;
+					this.requestParam.textIndex = 0;
 					this.requestParam.text = this.pageArr[this.pageArrIndex];
+					setTimeout(() => {
+						this.startPlay();
+					}, 100);
+					
 				}
+				
 			},
+			
 			// 下一页
 			nextPage() {
 				if (this.pageArrIndex < this.pageArr.length - 1) {
 					this.pageArrIndex++;
+					this.requestParam.textIndex = 0;
 					this.requestParam.text = this.pageArr[this.pageArrIndex];
+					setTimeout(() => {
+						this.startPlay();
+					}, 100);
+					
 				}
 			},
 
