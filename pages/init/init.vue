@@ -2,7 +2,11 @@
 	<view class="content">
 		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
 		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
-
+		<view
+		
+		v-if="isSpeak"
+		 class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
+		
 
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
@@ -38,31 +42,55 @@
 
 			</scroll-view>
 
+
+			<view
+			
+			style="
+			position: fixed;
+			width: 100%;
+			left: 0;
+			padding: 20rpx;
+			box-sizing: border-box;
+			"
+			:style="{
+				bottom: 'calc('+buttonBoxHeight+'px + 40rpx)'
+			}"
+
+			>
+				<u-row>
+					<u-col :span="6">
+						<view class="o-button">
+						上一页
+						</view>
+					</u-col>
+					<u-col :span="6">
+						<view class="o-button">
+						下一页
+						</view>
+					</u-col>				
+				</u-row>
+			</view>
+
 			<view id="button-box" class="button-box">
 
 				<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
 				<view v-if="isSpeak" style="text-align: center;">
 					<view type="primary" v-if="isStop" class="o-button" @click="changeLocation(requestParam.textIndex)">
 						继续播放</view>
-					<view style="height: 20rpx;"></view>
 
 
 					<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">停止播放</view>
-					<view style="height: 20rpx;"></view>
 
 				</view>
-				<view style="height: 20rpx;"></view>
 
 				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
 					开始播放
 				</view>
 
-				<view style="height: 20rpx;"></view>
 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
 					GPT快捷指令
 				</view>
 
-				<view style="height: 20rpx;"></view>
 				<view v-if="!isSpeak" @click="copyClip()" class="o-button">
 					粘贴剪切板
 				</view>
@@ -79,7 +107,6 @@
 					返回编辑
 				</view>
 
-				<view style="height: 20rpx;"></view>
 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view>
@@ -137,7 +164,12 @@
 
 				clipList: [],
 				
-				clipStr:""
+				clipStr:"",
+				
+				pageArr:[],
+
+				pageArrIndex:0
+			
 
 			}
 		},
@@ -145,7 +177,9 @@
 		mounted() {
 
 			uni.$on("fileRead", (content) => {
-				this.requestParam.text = content;
+				this.pageArr = this.pageSplit(content, 3000);
+				this.requestParam.text = this.pageArr[0];
+				this.pageArrIndex = 0;
 			});
 
 			this.getHeight();
@@ -153,6 +187,34 @@
 		},
 
 		methods: {
+			// 上一页
+			prePage() {
+				if (this.pageArrIndex > 0) {
+					this.pageArrIndex--;
+					this.requestParam.text = this.pageArr[this.pageArrIndex];
+				}
+			},
+			// 下一页
+			nextPage() {
+				if (this.pageArrIndex < this.pageArr.length - 1) {
+					this.pageArrIndex++;
+					this.requestParam.text = this.pageArr[this.pageArrIndex];
+				}
+			},
+
+
+			pageSplit(text,pageNumber) {
+			    var pageArr = [];
+			    var page = '';
+			    var pageLength = pageNumber;
+			    var textLength = text.length;
+			    var pageCount = Math.ceil(textLength / pageLength);
+			    for (var i = 0; i < pageCount; i++) {
+			        page = text.substr(i * pageLength, pageLength);
+			        pageArr.push(page);
+			    }
+			    return pageArr;
+			},
 			toMute() {
 				if (!this.isMute) {
 					this.isMute = true;
@@ -177,52 +239,7 @@
 				setTimeout(() => {
 					this.startPlay();
 				}, 100);
-				
-				// setTimeout(() => {
-				// 	this.kuaijieRun();
-				// 	var countNum=0;
-				
-				// 	var runInterval = setInterval(() => {
-				// 		countNum++;
-				// 		uni.getClipboardData({
-				// 			success: (res) => {
-				// 				if (this.oldClip != res.data) {
-				// 					this.oldClip = res.data;
 
-				// 					if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
-				// 						this.clipList.push(res.data+"\n\n");
-				// 						console.log(this.clipList[this.clipList.length - 1]);
-				// 						if (this.clipList.length <=1) {
-				// 							this.kuaijieRun();
-				// 						}
-										
-				// 					}
-
-				// 					if (this.clipList.length >=2||countNum>=10) {
-				// 						this.clipStr=""
-				// 						for(var i=0;i<this.clipList.length;i++){
-				// 							this.clipStr+=this.clipList[i];
-				// 						}
-				// 						this.clipList=[];
-				// 						this.$forceUpdate();
-				// 						uni.setClipboardData({
-				// 							data:this.clipStr
-				// 						})
-										
-										
-				// 						clearInterval(runInterval);
-				// 						return false;
-				// 					} 
-							
-				// 				}
-				// 			}
-				// 		});
-
-				// 	}, 5000);
-					
-					
-
-				// }, 100);
 
 			},
 			kuaijieRun() {
@@ -486,7 +503,10 @@
 		padding-top: 20rpx;
 		box-shadow: 0 0 30rpx #f0f0f0;
 
-		.o-button {
+	}
+
+
+	.o-button {
 			width: 100%;
 			background-color: #333;
 			border-radius: 10rpx;
@@ -500,5 +520,13 @@
 			background-color: #666;
 		}
 
-	}
+.tab{
+	background-color: rgba(0,0,0,.5);
+	color:#fff;
+	padding: 10rpx;
+	border-radius: 30rpx;
+	display: inline-block;
+	float: right;
+	margin-right: 20rpx;
+}
 </style>
