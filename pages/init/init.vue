@@ -12,7 +12,7 @@
 		box-sizing: border-box;
 		">
 
-
+{{"requestParam.text.length:"+requestParam.text.length}}
 			<textarea v-if="!isSpeak" class="textarea" maxlength="-1" :style="{
 					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
 				}" v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
