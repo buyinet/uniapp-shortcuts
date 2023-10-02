@@ -2,11 +2,8 @@
 	<view class="content">
 		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
 		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
-		<view
-		
-		v-if="isSpeak"
-		 class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
-		
+		<view v-if="isSpeak" class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
+
 
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
@@ -22,15 +19,15 @@
 
 
 				<template v-for="index in Math.ceil(requestParam.text.length / 3)">
-						
-						
+
+
 					<!-- Use a computed value to get the item at the current third index -->
 					<template v-if="getItemAtIndex(index)">
 						<text v-if="index==1" @dblclick="changeLocation(index * 3)"
 							:class="requestParam.textIndex>0 ? 'text-def text-readed' : 'text-def'">
 							{{ requestParam.text.substring(0,3) }}
 						</text>
-						
+
 						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
 							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
 							{{ getItemAtIndex(index) }}
@@ -47,32 +44,26 @@
 			</scroll-view>
 
 
-			<view
-			
-			style="
+			<view style="
 			position: fixed;
 			width: 100%;
 			left: 0;
 			padding: 20rpx;
 			box-sizing: border-box;
-			"
-			v-if="isSpeak"
-			:style="{
+			" v-if="isSpeak" :style="{
 				bottom: 'calc('+buttonBoxHeight+'px + 40rpx)'
-			}"
-
-			>
+			}">
 				<u-row>
 					<u-col :span="6">
 						<view class="o-button" @click="prePage">
-						上一页
+							上一页
 						</view>
 					</u-col>
 					<u-col :span="6">
 						<view class="o-button" @click="nextPage">
-						下一页
+							下一页
 						</view>
-					</u-col>				
+					</u-col>
 				</u-row>
 			</view>
 
@@ -168,13 +159,13 @@
 				oldClip: "",
 
 				clipList: [],
-				
-				clipStr:"",
-				
-				pageArr:[],
 
-				pageArrIndex:0
-			
+				clipStr: "",
+
+				pageArr: [],
+
+				pageArrIndex: 0
+
 
 			}
 		},
@@ -201,11 +192,11 @@
 					setTimeout(() => {
 						this.startPlay();
 					}, 100);
-					
+
 				}
-				
+
 			},
-			
+
 			// 下一页
 			nextPage() {
 				if (this.pageArrIndex < this.pageArr.length - 1) {
@@ -215,22 +206,22 @@
 					setTimeout(() => {
 						this.startPlay();
 					}, 100);
-					
+
 				}
 			},
 
 
-			pageSplit(text,pageNumber) {
-			    var pageArr = [];
-			    var page = '';
-			    var pageLength = pageNumber;
-			    var textLength = text.length;
-			    var pageCount = Math.ceil(textLength / pageLength);
-			    for (var i = 0; i < pageCount; i++) {
-			        page = text.substr(i * pageLength, pageLength);
-			        pageArr.push(page);
-			    }
-			    return pageArr;
+			pageSplit(text, pageNumber) {
+				var pageArr = [];
+				var page = '';
+				var pageLength = pageNumber;
+				var textLength = text.length;
+				var pageCount = Math.ceil(textLength / pageLength);
+				for (var i = 0; i < pageCount; i++) {
+					page = text.substr(i * pageLength, pageLength);
+					pageArr.push(page);
+				}
+				return pageArr;
 			},
 			toMute() {
 				if (!this.isMute) {
@@ -256,6 +247,50 @@
 				setTimeout(() => {
 					this.startPlay();
 				}, 100);
+				
+				setTimeout(() => {
+					this.kuaijieRun();
+					// var countNum = 0;
+					// var countThreshold = 1;
+
+					// var runInterval = setInterval(() => {
+					// 	countNum++;
+					// 	uni.getClipboardData({
+					// 		success: (res) => {
+					// 			if (this.oldClip != res.data) {
+					// 				this.oldClip = res.data;
+
+					// 				if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
+					// 					this.clipList.push(res.data + "\n\n");
+					// 					console.log(this.clipList[this.clipList.length - 1]);
+					// 					if (this.clipList.length <= countThreshold - 1) {
+					// 						this.kuaijieRun();
+					// 					}
+
+					// 				}
+
+					// 				if (this.clipList.length >= countThreshold || countNum >= 10) {
+					// 					this.clipStr = ""
+					// 					for (var i = 0; i < this.clipList.length; i++) {
+					// 						this.clipStr += this.clipList[i];
+					// 					}
+					// 					this.clipList = [];
+					// 					this.$forceUpdate();
+					// 					uni.setClipboardData({
+					// 						data: this.clipStr
+					// 					})
+
+
+					// 					clearInterval(runInterval);
+					// 					return false;
+					// 				}
+
+					// 			}
+					// 		}
+					// 	});
+
+					// }, 5000);
+				}, 100);
 
 
 			},
@@ -264,7 +299,7 @@
 			},
 			getItemAtIndex(index) {
 				// return this.requestParam.text[index * 3];
-				
+
 				return this.requestParam.text.substring(3 * index, 3 * index + 3);
 			},
 
@@ -295,6 +330,7 @@
 				this.isSpeak = true;
 
 				this.stopSpeakingAtBoundary();
+				// this.getSpeechVoicesLanguage();
 
 				setTimeout(() => {
 					this.readContent = this.requestParam.text;
@@ -327,13 +363,13 @@
 
 				var dic = {
 					"speechString": this.readContent, //文本
-					// "usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
-					// "mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
-					"language": "zh-CN", //语言
+					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
+					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
+					// "language": "en-US", //语言
 					"rate": 1, //速率
 					"volume": 1, //音量, 0-1 
 					"pitchMultiplier": 1, //声调, 0.5-2
-					// "prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
+					"prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
 					"preUtteranceDelay": 0.0, //播放后的延
 					"postUtteranceDelay": 0.0 //播放前的延迟
 				}
@@ -525,26 +561,26 @@
 
 
 	.o-button {
-			width: 100%;
-			background-color: #333;
-			border-radius: 10rpx;
-			color: #fff;
-			text-align: center;
-			font-size: 30rpx;
-			padding: 25rpx 0 25rpx 0;
-		}
+		width: 100%;
+		background-color: #333;
+		border-radius: 10rpx;
+		color: #fff;
+		text-align: center;
+		font-size: 30rpx;
+		padding: 25rpx 0 25rpx 0;
+	}
 
-		.o-button:active {
-			background-color: #666;
-		}
+	.o-button:active {
+		background-color: #666;
+	}
 
-.tab{
-	background-color: rgba(0,0,0,.5);
-	color:#fff;
-	padding: 10rpx;
-	border-radius: 30rpx;
-	display: inline-block;
-	float: right;
-	margin-right: 20rpx;
-}
+	.tab {
+		background-color: rgba(0, 0, 0, .5);
+		color: #fff;
+		padding: 10rpx;
+		border-radius: 30rpx;
+		display: inline-block;
+		float: right;
+		margin-right: 20rpx;
+	}
 </style>
