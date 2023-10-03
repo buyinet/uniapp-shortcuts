@@ -2,7 +2,10 @@
 	<view class="content">
 		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
 		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
-		<view v-if="isSpeak" class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
+		<view class="tab-box">
+			<view v-if="isSpeak" class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
+			<view v-if="isSpeak" class="tab">{{ gptArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
+		</view>
 
 
 		<view style="padding: 20rpx;
@@ -44,40 +47,65 @@
 			</scroll-view>
 
 
-			<view style="
-			position: fixed;
-			width: 100%;
-			left: 0;
-			padding: 20rpx;
-			box-sizing: border-box;
-			" v-if="isSpeak" :style="{
-				bottom: 'calc('+buttonBoxHeight+'px + 40rpx)'
-			}">
-				<u-row>
-					<u-col :span="6">
-						<view class="o-button" @click="prePage">
-							上一页
-						</view>
-					</u-col>
-					<u-col :span="6">
-						<view class="o-button" @click="nextPage">
-							下一页
-						</view>
-					</u-col>
-				</u-row>
-			</view>
 
 			<view id="button-box" class="button-box">
 
-				<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
-				<view v-if="isSpeak" style="text-align: center;">
-					<view type="primary" v-if="isStop" class="o-button" @click="changeLocation(requestParam.textIndex)">
-						继续播放</view>
-
-
-					<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">停止播放</view>
-
+				<view style="
+			width: 100%;
+			" v-if="isSpeak">
+					<u-row>
+						<u-col :span="6">
+							<view class="o-button" @click="prePage">
+								上一页
+							</view>
+						</u-col>
+						<u-col :span="6">
+							<view class="o-button" @click="nextPage">
+								下一页
+							</view>
+						</u-col>
+					</u-row>
 				</view>
+
+				<u-row>
+					<u-col :span="4">
+
+						<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
+						<view v-if="isSpeak" style="text-align: center;">
+							<view type="primary" v-if="isStop" class="o-button"
+								@click="changeLocation(requestParam.textIndex)">
+								继续播放</view>
+							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">停止播放
+							</view>
+						</view>
+
+					</u-col>
+
+					<u-col :span="4">
+
+						<view v-if="isSpeak">
+
+							<view v-if="!isMute" @click="toMute()" class="o-button">
+								静音
+							</view>
+
+							<view v-if="isMute" @click="toMute()" class="o-button">
+								声音
+							</view>
+
+						</view>
+
+					</u-col>
+
+					<u-col :span="4">
+						<view v-if="isSpeak" @click="toEdit()" class="o-button">
+							返回编辑
+						</view>
+
+					</u-col>
+
+				</u-row>
+
 
 				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
 					开始播放
@@ -91,17 +119,6 @@
 					粘贴剪切板
 				</view>
 
-				<view v-if="!isMute" @click="toMute()" class="o-button">
-					静音
-				</view>
-
-				<view v-if="isMute" @click="toMute()" class="o-button">
-					声音
-				</view>
-
-				<view v-if="isSpeak" @click="toEdit()" class="o-button">
-					返回编辑
-				</view>
 
 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
@@ -164,31 +181,96 @@
 
 				pageArr: [],
 
-				pageArrIndex: 0
+				gptResArr: [],
 
+				pageArrIndex: 0,
+				gptArrIndex: 0,
 
 			}
 		},
 
 		mounted() {
 
-			uni.$on("fileRead", (content) => {
-				this.pageArr = this.pageSplit(content, 500);
-				this.requestParam.text = this.pageArr[0];
+			uni.$on("fileRead", async (content) => {
+				this.pageArr = this.pageSplit(content, 2000);
+				this.gptResArr = new Array(this.pageArr.length).fill("");
+
 				this.pageArrIndex = 0;
+				this.requestParam.text = "Waiting First Page";
+				await this.fetchData(this.pageArr[0]).then(data => {
+					console.log(data);
+					this.gptResArr[0] = data;
+					this.requestParam.text = this.gptResArr[
+						0]; // Assign the fetched data to the variable
+				}).catch(error => {
+					console.error("Error fetching data:", error);
+					this.requestParam.text = error;
+				});
+				// this.requestParam.text = this.pageArr[0];
+				this.updateNextOnePage();
 			});
+
 
 			this.getHeight();
 
 		},
-
 		methods: {
-			// 上一页
+			async updateNextOnePage() {
+				var nextPageIndex = this.pageArrIndex;
+				while (nextPageIndex < this.pageArr.length - 1) {
+
+					await new Promise((resolve, reject) => {
+						setTimeout(() => {
+							resolve("");
+						}, 10000)
+					});
+					nextPageIndex++;
+					await this.fetchData(this.pageArr[nextPageIndex]).then(data => {
+						console.log(data);
+						this.gptResArr[nextPageIndex] = data;
+						this.gptArrIndex = nextPageIndex;
+					}).catch(error => {
+						console.error("Error fetching data:", error);
+						nextPageIndex--;
+					});
+
+				}
+			},
+
+			fetchData(input_t) {
+				const inputText = "假设你是教授，请生动准确地解释所给论文要点，用不超过1000个字回复，文本:{" +
+					input_t + "}";
+				return new Promise((resolve, reject) => {
+					const url = `http://192.168.0.12:5500/?text=${encodeURIComponent(inputText)}`;
+
+					uni.request({
+						url: url,
+						method: 'GET',
+						success: (res) => {
+							console.log("res", res);
+							if (res.statusCode === 200) {
+								resolve(res.data);
+							} else {
+								reject(new Error('Server responded with status code: ' + res
+									.statusCode));
+							}
+						},
+						fail: (error) => {
+							console.log("error", error);
+							reject(new Error('Network request failed: ' + error.message));
+						}
+					});
+				});
+			},
+
+			// 上一页; 自动总结
 			prePage() {
 				if (this.pageArrIndex > 0) {
 					this.pageArrIndex--;
 					this.requestParam.textIndex = 0;
-					this.requestParam.text = this.pageArr[this.pageArrIndex];
+					this.requestParam.text = this.gptResArr[this.pageArrIndex];
+
+					// this.requestParam.text = this.pageArr[this.pageArrIndex];
 					setTimeout(() => {
 						this.startPlay();
 					}, 100);
@@ -202,7 +284,8 @@
 				if (this.pageArrIndex < this.pageArr.length - 1) {
 					this.pageArrIndex++;
 					this.requestParam.textIndex = 0;
-					this.requestParam.text = this.pageArr[this.pageArrIndex];
+					this.requestParam.text = this.gptResArr[this.pageArrIndex];
+					// this.requestParam.text = this.pageArr[this.pageArrIndex];
 					setTimeout(() => {
 						this.startPlay();
 					}, 100);
@@ -247,7 +330,7 @@
 				setTimeout(() => {
 					this.startPlay();
 				}, 100);
-				
+
 				setTimeout(() => {
 					this.kuaijieRun();
 					// var countNum = 0;
@@ -574,13 +657,16 @@
 		background-color: #666;
 	}
 
-	.tab {
-		background-color: rgba(0, 0, 0, .5);
-		color: #fff;
-		padding: 10rpx;
-		border-radius: 30rpx;
-		display: inline-block;
-		float: right;
-		margin-right: 20rpx;
+	.tab-box {
+		.tab {
+			background-color: rgba(0, 0, 0, .5);
+			color: #fff;
+			padding: 10rpx;
+			border-radius: 30rpx;
+			display: inline-block;
+			float: right;
+			margin-right: 20rpx;
+		}
+
 	}
 </style>

@@ -1,4 +1,5 @@
 {
+	"networkTimeout": {"request":180000},
     "name" : "TOT",
     "appid" : "__UNI__DEF7112",
     "description" : "",
