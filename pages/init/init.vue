@@ -111,18 +111,18 @@
 					开始播放
 				</view>
 
-				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
+<!-- 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
 					GPT快捷指令
-				</view>
+				</view> -->
 
 				<view v-if="!isSpeak" @click="copyClip()" class="o-button">
 					粘贴剪切板
 				</view>
 
 
-				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
+<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
-				</view>
+				</view> -->
 
 
 			</view>
@@ -184,15 +184,16 @@
 				gptResArr: [],
 
 				pageArrIndex: 0,
+				
 				gptArrIndex: 0,
 
 			}
 		},
 
 		mounted() {
-
-			uni.$on("fileRead", async (content) => {
-				this.pageArr = this.pageSplit(content, 2000);
+// uni.$emit("fileCopy",abc)
+			uni.$on("fileCopy", async (content) => {
+				this.pageArr = this.pageSplit(content, 4000);
 				this.gptResArr = new Array(this.pageArr.length).fill("");
 
 				this.pageArrIndex = 0;
@@ -205,6 +206,7 @@
 				}).catch(error => {
 					console.error("Error fetching data:", error);
 					this.requestParam.text = error;
+					this.pageArrIndex--;
 				});
 				// this.requestParam.text = this.pageArr[0];
 				this.updateNextOnePage();
@@ -238,11 +240,10 @@
 			},
 
 			fetchData(input_t) {
-				const inputText = "假设你是教授，请生动准确地解释所给论文要点，用不超过1000个字回复，文本:{" +
-					input_t + "}";
+				const inputText = "假设你是教授，请生动准确地解释所给论文要点，用不超过2000个字的中文回答，文本:{" +
+					input_t + "}，用不超过2000个字的中文回答";
 				return new Promise((resolve, reject) => {
-					const url = `http://192.168.0.12:5500/?text=${encodeURIComponent(inputText)}`;
-
+					const url = `http://tot.kantboot.com/?text=${encodeURIComponent(inputText)}`;
 					uni.request({
 						url: url,
 						method: 'GET',
@@ -318,65 +319,17 @@
 			copyClipFront() {
 				uni.getClipboardData({
 					success: (res) => {
-						this.oldClip = res.data;
-						this.requestParam.text = res.data;
+						setTimeout(()=>{
+							uni.$emit("fileCopy",res.data);								
+						},500);
 					}
 				});
 			},
 
 			copyClip() {
 				this.copyClipFront();
-
-				setTimeout(() => {
-					this.startPlay();
-				}, 100);
-
-				setTimeout(() => {
-					this.kuaijieRun();
-					// var countNum = 0;
-					// var countThreshold = 1;
-
-					// var runInterval = setInterval(() => {
-					// 	countNum++;
-					// 	uni.getClipboardData({
-					// 		success: (res) => {
-					// 			if (this.oldClip != res.data) {
-					// 				this.oldClip = res.data;
-
-					// 				if (res.data.indexOf("请根据所给文本准备一份课程讲稿") == -1) {
-					// 					this.clipList.push(res.data + "\n\n");
-					// 					console.log(this.clipList[this.clipList.length - 1]);
-					// 					if (this.clipList.length <= countThreshold - 1) {
-					// 						this.kuaijieRun();
-					// 					}
-
-					// 				}
-
-					// 				if (this.clipList.length >= countThreshold || countNum >= 10) {
-					// 					this.clipStr = ""
-					// 					for (var i = 0; i < this.clipList.length; i++) {
-					// 						this.clipStr += this.clipList[i];
-					// 					}
-					// 					this.clipList = [];
-					// 					this.$forceUpdate();
-					// 					uni.setClipboardData({
-					// 						data: this.clipStr
-					// 					})
-
-
-					// 					clearInterval(runInterval);
-					// 					return false;
-					// 				}
-
-					// 			}
-					// 		}
-					// 	});
-
-					// }, 5000);
-				}, 100);
-
-
 			},
+			
 			kuaijieRun() {
 				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
 			},
@@ -458,10 +411,7 @@
 				}
 
 
-
 				// this.speakUtterance();
-
-
 				KJSpeechSynthesizer.init(dic, (res) => {
 					// console.log("init:" + JSON.stringify(res));
 					if (res.type == "init") {
@@ -470,6 +420,11 @@
 						console.log("开始播放/重新生成")
 					} else if (res.type == "didFinishSpeechUtterance") {
 						console.log("完成播放/生成")
+						if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex+1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length-10)) {
+								setTimeout(() => {
+									this.nextPage();
+								}, 200);
+							}
 						//this.init();
 					} else if (res.type == "didPauseSpeechUtterance") {
 						console.log("暂停播放/生成")
@@ -479,7 +434,14 @@
 						console.log("取消播放/生成")
 					} else if (res.type == "willSpeakRangeOfSpeechString") {
 						this.requestParam.textIndex = res.location - (-this.pauseIndex);
-						console.log("播放/生成文本的位置，第" + res.location + "字符")
+						console.log("播放/生成文本的位置，第" + res.location + "字符");
+						// console.log("textIndex ", this.requestParam.textIndex);
+						// console.log("Text length ", this.requestParam.text.length);
+						// if ( (this.requestParam.textIndex >= this.requestParam.text.length-5) && (!this.flipPage )) {
+						// 	this.flipPage = true;
+
+						// 	this.flipPage = false;
+						// }
 					}
 				})
 
@@ -527,16 +489,13 @@
 						this.$forceUpdate();
 					}, 100);
 				}, 100);
-
-
-
 			},
-
 
 			speakUtterance() {
 				KJSpeechSynthesizer.speakUtterance((res) => {
-					console.log("speakUtterance:" + JSON.stringify(res))
+					console.log("speakUtterance:" + JSON.stringify(res));
 				});
+
 			},
 			pauseSpeakingAtBoundary() {
 				KJSpeechSynthesizer.pauseSpeakingAtBoundary({
