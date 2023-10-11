@@ -186,6 +186,8 @@
 				pageArrIndex: 0,
 				
 				gptArrIndex: 0,
+				
+				visitedPages: [],
 
 			}
 		},
@@ -203,13 +205,23 @@
 					this.gptResArr[0] = data;
 					this.requestParam.text = this.gptResArr[
 						0]; // Assign the fetched data to the variable
+					this.visitedPages.push(0+"")
 				}).catch(error => {
 					console.error("Error fetching data:", error);
 					this.requestParam.text = error;
 					this.pageArrIndex--;
 				});
 				// this.requestParam.text = this.pageArr[0];
-				this.updateNextOnePage();
+				
+				this.$nextTick(()=>{
+					this.updateNextOnePage();
+				});
+				this.$nextTick(()=>{
+					this.updateNextOnePage();
+				});
+				this.$nextTick(()=>{
+					this.updateNextOnePage();
+				});
 			});
 
 
@@ -227,6 +239,13 @@
 						}, 10000)
 					});
 					nextPageIndex++;
+					// if nextPageIndex in this.visitedPages, continue 
+					if (this.visitedPages.indexOf(nextPageIndex+"") != -1) {
+						continue;
+					}
+					
+					// if not continue add the current page to the visitedPages
+					this.visitedPages.push(nextPageIndex+"")
 					await this.fetchData(this.pageArr[nextPageIndex]).then(data => {
 						console.log(data);
 						this.gptResArr[nextPageIndex] = data;
