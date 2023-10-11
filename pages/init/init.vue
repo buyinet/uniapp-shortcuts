@@ -111,7 +111,7 @@
 					开始播放
 				</view>
 
-<!-- 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
+				<!-- 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
 					GPT快捷指令
 				</view> -->
 
@@ -120,7 +120,7 @@
 				</view>
 
 
-<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
+				<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view> -->
 
@@ -184,43 +184,60 @@
 				gptResArr: [],
 
 				pageArrIndex: 0,
-				
+
 				gptArrIndex: 0,
-				
+
 				visitedPages: [],
 
 			}
 		},
 
 		mounted() {
-// uni.$emit("fileCopy",abc)
+			// uni.$emit("fileCopy",abc)
 			uni.$on("fileCopy", async (content) => {
-				this.pageArr = this.pageSplit(content, 4000);
+				this.pageArr = this.pageSplit(content, 8000);
 				this.gptResArr = new Array(this.pageArr.length).fill("");
 
 				this.pageArrIndex = 0;
 				this.requestParam.text = "Waiting First Page";
-				await this.fetchData(this.pageArr[0]).then(data => {
-					console.log(data);
-					this.gptResArr[0] = data;
-					this.requestParam.text = this.gptResArr[
-						0]; // Assign the fetched data to the variable
-					this.visitedPages.push(0+"")
-				}).catch(error => {
-					console.error("Error fetching data:", error);
-					this.requestParam.text = error;
-					this.pageArrIndex--;
-				});
+				// 				await this.fetchData(this.pageArr[0]).then(data => {
+				// 					console.log(data);
+				// 					this.gptResArr[0] = data;
+				// e
+				// 					this.visitedPages.push(0+"")
+				// 				}).catch(error => {
+				// 					console.error("Error fetching data:", error);
+				// 					this.requestParam.text = error;
+				// 					this.pageArrIndex--;
+				// 				});
 				// this.requestParam.text = this.pageArr[0];
-				
-				this.$nextTick(()=>{
-					this.updateNextOnePage();
+
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
 				});
-				this.$nextTick(()=>{
-					this.updateNextOnePage();
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
 				});
-				this.$nextTick(()=>{
-					this.updateNextOnePage();
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
+				});
+				this.$nextTick(() => {
+					this.updateNextOnePage(-1);
 				});
 			});
 
@@ -229,27 +246,30 @@
 
 		},
 		methods: {
-			async updateNextOnePage() {
-				var nextPageIndex = this.pageArrIndex;
+			async updateNextOnePage(start_page) {
+				var nextPageIndex = start_page;
 				while (nextPageIndex < this.pageArr.length - 1) {
 
 					await new Promise((resolve, reject) => {
 						setTimeout(() => {
 							resolve("");
-						}, 10000)
+						}, 1000)
 					});
 					nextPageIndex++;
 					// if nextPageIndex in this.visitedPages, continue 
-					if (this.visitedPages.indexOf(nextPageIndex+"") != -1) {
+					if (this.visitedPages.indexOf(nextPageIndex + "") != -1) {
 						continue;
 					}
-					
 					// if not continue add the current page to the visitedPages
-					this.visitedPages.push(nextPageIndex+"")
+					this.visitedPages.push(nextPageIndex + "")
 					await this.fetchData(this.pageArr[nextPageIndex]).then(data => {
 						console.log(data);
 						this.gptResArr[nextPageIndex] = data;
 						this.gptArrIndex = nextPageIndex;
+						if (nextPageIndex === 0) {
+							this.requestParam.text = this.gptResArr[
+							0]; // Assign the fetched data to the variabl
+						}
 					}).catch(error => {
 						console.error("Error fetching data:", error);
 						nextPageIndex--;
@@ -259,8 +279,8 @@
 			},
 
 			fetchData(input_t) {
-				const inputText = "假设你是教授，请生动准确地解释所给论文要点，用不超过2000个字的中文回答，文本:{" +
-					input_t + "}，用不超过2000个字的中文回答";
+				const inputText = "假设你是教授，请生动准确地解释所给文本要点，用至少2000字的中文回答，文本:{" +
+					input_t + "}，用至少2000字的中文回答";
 				return new Promise((resolve, reject) => {
 					const url = `http://tot.kantboot.com/?text=${encodeURIComponent(inputText)}`;
 					uni.request({
@@ -312,14 +332,15 @@
 
 				}
 			},
-
-
 			pageSplit(text, pageNumber) {
 				var pageArr = [];
 				var page = '';
 				var pageLength = pageNumber;
 				var textLength = text.length;
 				var pageCount = Math.ceil(textLength / pageLength);
+				console.log("PageSplitLen: ")
+				console.log(pageLength)
+				console.log(textLength)
 				for (var i = 0; i < pageCount; i++) {
 					page = text.substr(i * pageLength, pageLength);
 					pageArr.push(page);
@@ -338,9 +359,9 @@
 			copyClipFront() {
 				uni.getClipboardData({
 					success: (res) => {
-						setTimeout(()=>{
-							uni.$emit("fileCopy",res.data);								
-						},500);
+						setTimeout(() => {
+							uni.$emit("fileCopy", res.data);
+						}, 500);
 					}
 				});
 			},
@@ -348,7 +369,7 @@
 			copyClip() {
 				this.copyClipFront();
 			},
-			
+
 			kuaijieRun() {
 				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
 			},
@@ -439,11 +460,12 @@
 						console.log("开始播放/重新生成")
 					} else if (res.type == "didFinishSpeechUtterance") {
 						console.log("完成播放/生成")
-						if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex+1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length-10)) {
-								setTimeout(() => {
-									this.nextPage();
-								}, 200);
-							}
+						if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex +
+								1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length - 10)) {
+							setTimeout(() => {
+								this.nextPage();
+							}, 200);
+						}
 						//this.init();
 					} else if (res.type == "didPauseSpeechUtterance") {
 						console.log("暂停播放/生成")
