@@ -120,10 +120,13 @@
 				</view>
 
 
+
 				<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view> -->
-
+				<view v-if="!isSpeak" class="o-button" @click="openYsxy()">
+					隐私协议
+				</view>
 
 			</view>
 
@@ -195,7 +198,7 @@
 		mounted() {
 			// uni.$emit("fileCopy",abc)
 			uni.$on("fileCopy", async (content) => {
-				this.pageArr = this.pageSplit(content, 8000);
+				this.pageArr = this.pageSplit(content, 4000);
 				this.gptResArr = new Array(this.pageArr.length).fill("");
 
 				this.pageArrIndex = 0;
@@ -233,12 +236,12 @@
 				this.$nextTick(() => {
 					this.updateNextOnePage(-1);
 				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
+				// this.$nextTick(() => {
+				// 	this.updateNextOnePage(-1);
+				// });
+				// this.$nextTick(() => {
+				// 	this.updateNextOnePage(-1);
+				// });
 			});
 
 
@@ -246,6 +249,9 @@
 
 		},
 		methods: {
+			openYsxy(){
+				plus.runtime.openURL("https://file.kantboot.com/agreement/TotYsxy.html")
+			},
 			async updateNextOnePage(start_page) {
 				var nextPageIndex = start_page;
 				while (nextPageIndex < this.pageArr.length - 1) {
@@ -272,6 +278,7 @@
 						}
 					}).catch(error => {
 						console.error("Error fetching data:", error);
+						this.visitedPages = this.visitedPages.filter(page => page !== (nextPageIndex + ""));
 						nextPageIndex--;
 					});
 
@@ -279,8 +286,8 @@
 			},
 
 			fetchData(input_t) {
-				const inputText = "假设你是教授，请生动准确地解释所给文本要点，用至少2000字的中文回答，文本:{" +
-					input_t + "}，用至少2000字的中文回答";
+				const inputText = "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点，用大概2000字的中文回答，文本:\"\"\"" +
+					input_t + "\"\"\", 要求格式：\"为了大家理解，先举个例子：...\"";
 				return new Promise((resolve, reject) => {
 					const url = `http://tot.kantboot.com/?text=${encodeURIComponent(inputText)}`;
 					uni.request({
@@ -441,11 +448,12 @@
 					"speechString": this.readContent, //文本
 					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
 					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
-					// "language": "en-US", //语言
-					"rate": 1, //速率
+					"voice": "Lilian",
+					"language": "zh-CN", //语言
+					"rate": 0.8, //速率
 					"volume": 1, //音量, 0-1 
 					"pitchMultiplier": 1, //声调, 0.5-2
-					"prefersAssistiveTechnologySettings": true, //是否辅助技术, ios14及以上才支持
+					"prefersAssistiveTechnologySettings": false, //是否辅助技术, ios14及以上才支持
 					"preUtteranceDelay": 0.0, //播放后的延
 					"postUtteranceDelay": 0.0 //播放前的延迟
 				}
