@@ -21,26 +21,14 @@
 				}" scroll-y v-if="isSpeak" class="text-view" style="font-size: 30rpx;">
 
 
-				<template v-for="index in Math.ceil(requestParam.text.length / 3)">
+				<template v-for="(item, index) in requestParam.text">
+					<text v-if="item!=' '" @dblclick="changeLocation(index)"
+						:class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
+						{{ item }}
+					</text>
 
-
-					<!-- Use a computed value to get the item at the current third index -->
-					<template v-if="getItemAtIndex(index)">
-						<text v-if="index==1" @dblclick="changeLocation(index * 3)"
-							:class="requestParam.textIndex>0 ? 'text-def text-readed' : 'text-def'">
-							{{ requestParam.text.substring(0,3) }}
-						</text>
-
-						<text v-if="getItemAtIndex(index) != '   '" @dblclick="changeLocation(index * 3)"
-							:class="index * 3 <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
-							{{ getItemAtIndex(index) }}
-						</text>
-
-						<view v-if="getItemAtIndex(index) == '   '" style="width: 10rpx;display: inline-block;"
-							@dblclick="changeLocation(index * 3)"></view>
-
-					</template>
-
+					<view v-if="item==' '" style="width: 10rpx;display: inline-block;"
+						@dblclick="changeLocation(index)"></view>
 				</template>
 
 
@@ -74,8 +62,8 @@
 						<view v-if="isSpeak" style="text-align: center;">
 							<view type="primary" v-if="isStop" class="o-button"
 								@click="changeLocation(requestParam.textIndex)">
-								继续播放</view>
-							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">停止播放
+								播放</view>
+							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">播放
 							</view>
 						</view>
 
@@ -124,10 +112,15 @@
 				<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view> -->
-				<view v-if="!isSpeak" class="o-button" @click="openYsxy()">
+				<!-- 				<view v-if="!isSpeak" class="o-button" @click="openYsxy()">
 					隐私协议
+				</view> -->
+				<view v-if="!isSpeak" class="o-button" @click="saveData()">
+					保存数据
 				</view>
-
+				<view v-if="!isSpeak" class="o-button" @click="reloadData()">
+					恢复数据
+				</view>
 			</view>
 
 		</view>
@@ -230,12 +223,12 @@
 				this.$nextTick(() => {
 					this.updateNextOnePage(-1);
 				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
+				// this.$nextTick(() => {
+				// 	this.updateNextOnePage(-1);
+				// });
+				// this.$nextTick(() => {
+				// 	this.updateNextOnePage(-1);
+				// });
 				// this.$nextTick(() => {
 				// 	this.updateNextOnePage(-1);
 				// });
@@ -249,9 +242,88 @@
 
 		},
 		methods: {
-			openYsxy(){
+			saveData() {
+				const dataToSave = {
+					title: this.title,
+					requestParam: this.requestParam,
+					// Add other properties you need to save
+					gptResArr: this.gptResArr,
+				};
+
+				// Convert data to JSON string
+				const dataStr = JSON.stringify(dataToSave);
+
+				// #ifdef APP-PLUS
+				const fileSystem = plus.io;
+				const filePath = "_doc/data.json"; // File path where data will be saved
+
+				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+					fs.root.getFile(filePath, {
+						create: true
+					}, (fileEntry) => {
+						fileEntry.createWriter((fileWriter) => {
+							fileWriter.write(dataStr);
+							console.log('Data saved successfully');
+						}, (error) => console.error('File write failed:', error));
+					}, (error) => console.error('Get file failed:', error));
+				}, (error) => console.error('Request file system failed:', error));
+				// #endif
+			},
+			reloadData() {
+				// #ifdef APP-PLUS
+				const fileSystem = plus.io;
+				const filePath = "_doc/data.json"; // File path from where data will be loaded
+
+				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+					fs.root.getFile(filePath, {}, (fileEntry) => {
+						fileEntry.file((file) => {
+							const reader = new plus.io.FileReader();
+							reader.onloadend = (e) => {
+								const data = JSON.parse(e.target.result);
+								this.title = data.title;
+								this.requestParam = data.requestParam;
+								// Update other properties as needed
+								this.gptResArr = Array.isArray(data.gptResArr) ? data
+									.gptResArr : [];
+								console.log('Data reloaded successfully');
+							};
+							reader.readAsText(file);
+						}, (error) => console.error('Read file failed:', error));
+					}, (error) => console.error('Get file failed:', error));
+				}, (error) => console.error('Request file system failed:', error));
+				// #endif
+			},
+			resetData() {
+				this.title = 'Hello';
+				// #ifdef APP-PLUS
+				this.filePath = plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf");
+				// #endif
+				this.requestParam = {
+					text: "",
+					textIndex: 0
+				};
+				this.map = new Map();
+				this.readContent = '';
+				this.pauseIndex = 0;
+				this.ktNavBarHeight = 0;
+				this.buttonBoxHeight = 0;
+				this.isSpeak = false;
+				this.isMute = false;
+				this.isStop = false;
+				this.oldClip = "";
+				this.clipList = [];
+				this.clipStr = "";
+				this.pageArr = [];
+				this.gptResArr = [];
+				this.pageArrIndex = 0;
+				this.gptArrIndex = 0;
+				this.visitedPages = [];
+			},
+
+			openYsxy() {
 				plus.runtime.openURL("https://file.kantboot.com/agreement/TotYsxy.html")
 			},
+
 			async updateNextOnePage(start_page) {
 				var nextPageIndex = start_page;
 				while (nextPageIndex < this.pageArr.length - 1) {
@@ -274,7 +346,7 @@
 						this.gptArrIndex = nextPageIndex;
 						if (nextPageIndex === 0) {
 							this.requestParam.text = this.gptResArr[
-							0]; // Assign the fetched data to the variabl
+								0]; // Assign the fetched data to the variabl
 						}
 					}).catch(error => {
 						console.error("Error fetching data:", error);
@@ -289,7 +361,7 @@
 				const inputText = "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点，用大概2000字的中文回答，文本:\"\"\"" +
 					input_t + "\"\"\", 要求格式：\"为了大家理解，先举个例子：...\"";
 				return new Promise((resolve, reject) => {
-					const url = `http://tot.kantboot.com/?text=${encodeURIComponent(inputText)}`;
+					const url = `http://66.56.9.33:4000/?text=${encodeURIComponent(inputText)}`;
 					uni.request({
 						url: url,
 						method: 'GET',
@@ -374,6 +446,9 @@
 			},
 
 			copyClip() {
+				setTimeout(() => {
+					this.resetData();
+				}, 200);
 				this.copyClipFront();
 			},
 
