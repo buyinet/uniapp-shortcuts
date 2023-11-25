@@ -1,791 +1,818 @@
 <template>
-	<view class="content">
-		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
-		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
-		<view class="tab-box">
-			<view v-if="isSpeak" class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
-			<view v-if="isSpeak" class="tab">{{ gptArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
-		</view>
+    <view class="content">
+        <kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
+        <kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
+        <setting-popup ref="settingPopup" @change="settingPopupChange"></setting-popup>
+        <view class="tab-box">
+            <view class="tab tab-setting" style="background-color: rgba(0,0,0,0);" @click="openSettingPopup()">
+                <u-icon name="setting" size="40rpx"></u-icon>
+            </view>
+            <view v-if="isSpeak" class="tab">{{ pageArrIndex - (-1) }}{{ "/" }}{{ pageArr.length }}</view>
+            <view v-if="isSpeak" class="tab">{{ gptArrIndex - (-1) }}{{ "/" }}{{ pageArr.length }}</view>
+        </view>
 
+        <view style="height: 20px;"></view>
 
-		<view style="padding: 20rpx;
+        <view style="padding: 20rpx;
 		box-sizing: border-box;
 		">
 
-			<textarea v-if="!isSpeak" class="textarea" maxlength="-1" :style="{
-					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
-				}" v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
+            <textarea v-if="!isSpeak" class="textarea" maxlength="-1" :style="{
+                height: 'calc(100vh' + ' - ' + ktNavBarHeight + 'px - ' + buttonBoxHeight + 'px - 40rpx)',
+            }" v-model="requestParam.text" placeholder="请输入内容" placeholder-class="textarea-placeholder" />
 
-			<scroll-view :style="{
-					height: 'calc(100vh'+' - '+ktNavBarHeight+'px - '+buttonBoxHeight+'px - 40rpx)',
-				}" scroll-y v-if="isSpeak" class="text-view" style="font-size: 30rpx;">
-
-
-				<template v-for="(item, index) in requestParam.text">
-					<text v-if="item!=' '" @dblclick="changeLocation(index)"
-						:class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
-						{{ item }}
-					</text>
-
-					<view v-if="item==' '" style="width: 10rpx;display: inline-block;"
-						@dblclick="changeLocation(index)"></view>
-				</template>
+            <scroll-view :style="{
+                height: 'calc(100vh' + ' - ' + ktNavBarHeight + 'px - ' + buttonBoxHeight + 'px - 40rpx)',
+            }" scroll-y v-if="isSpeak" class="text-view" style="font-size: 30rpx;">
 
 
-			</scroll-view>
+                <template v-for="(item, index) in requestParam.text">
+                    <text v-if="item != ' '" @dblclick="changeLocation(index)"
+                        :class="index <= requestParam.textIndex ? 'text-def text-readed' : 'text-def'">
+                        {{ item }}
+                    </text>
+
+                    <view v-if="item == ' '" style="width: 10rpx;display: inline-block;" @dblclick="changeLocation(index)">
+                    </view>
+                </template>
+
+
+            </scroll-view>
 
 
 
-			<view id="button-box" class="button-box">
+            <view id="button-box" class="button-box">
 
-				<view style="
+                <view style="
 			width: 100%;
 			" v-if="isSpeak">
-					<u-row>
-						<u-col :span="6">
-							<view class="o-button" @click="prePage">
-								上一页
-							</view>
-						</u-col>
-						<u-col :span="6">
-							<view class="o-button" @click="nextPage">
-								下一页
-							</view>
-						</u-col>
-					</u-row>
-				</view>
+                    <u-row>
+                        <u-col :span="6">
+                            <view class="o-button" @click="prePage">
+                                上一页
+                            </view>
+                        </u-col>
+                        <u-col :span="6">
+                            <view class="o-button" @click="nextPage">
+                                下一页
+                            </view>
+                        </u-col>
+                    </u-row>
+                </view>
 
-				<u-row>
-					<u-col :span="4">
+                <u-row>
+                    <u-col :span="4">
 
-						<!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
-						<view v-if="isSpeak" style="text-align: center;">
-							<view type="primary" v-if="isStop" class="o-button"
-								@click="changeLocation(requestParam.textIndex)">
-								继续播放</view>
-							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">暂停播放
-							</view>
-						</view>
+                        <!-- <kt-button type="primary" @click="start()">开始播放</kt-button> -->
+                        <view v-if="isSpeak" style="text-align: center;">
+                            <view type="primary" v-if="isStop" class="o-button"
+                                @click="changeLocation(requestParam.textIndex)">
+                                继续播放</view>
+                            <view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">暂停播放
+                            </view>
+                        </view>
 
-					</u-col>
+                    </u-col>
 
-					<u-col :span="4">
+                    <u-col :span="4">
 
-						<view v-if="isSpeak">
+                        <view v-if="isSpeak">
 
-							<view v-if="!isMute" @click="toMute()" class="o-button">
-								静音
-							</view>
+                            <view v-if="!isMute" @click="toMute()" class="o-button">
+                                静音
+                            </view>
 
-							<view v-if="isMute" @click="toMute()" class="o-button">
-								声音
-							</view>
+                            <view v-if="isMute" @click="toMute()" class="o-button">
+                                声音
+                            </view>
 
-						</view>
+                        </view>
 
-					</u-col>
+                    </u-col>
 
-					<u-col :span="4">
-						<view v-if="isSpeak" @click="toEdit()" class="o-button">
-							返回编辑
-						</view>
+                    <u-col :span="4">
+                        <view v-if="isSpeak" @click="toEdit()" class="o-button">
+                            返回编辑
+                        </view>
 
-					</u-col>
+                    </u-col>
 
-				</u-row>
+                </u-row>
 
 
-				<view v-if="!isSpeak" class="o-button" @click="startPlay()">
-					开始播放
-				</view>
+                <view v-if="!isSpeak" class="o-button" @click="startPlay()">
+                    开始播放
+                </view>
 
-				<!-- 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
+                <!-- 				<view v-if="!isSpeak" @click="kuaijieRun()" class="o-button">
 					GPT快捷指令
 				</view> -->
 
-				<view v-if="!isSpeak" @click="copyClip()" class="o-button">
-					粘贴剪切板
-				</view>
+                <view v-if="!isSpeak" @click="copyClip()" class="o-button">
+                    粘贴剪切板
+                </view>
 
 
 
-				<!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
+                <!-- 				<view v-if="!isSpeak" @click="toReadFile()" class="o-button">
 					读取文件
 				</view> -->
-				<!-- 				<view v-if="!isSpeak" class="o-button" @click="openYsxy()">
+                <!-- 				<view v-if="!isSpeak" class="o-button" @click="openYsxy()">
 					隐私协议
 				</view> -->
-				<view v-if="!isSpeak" class="o-button" @click="saveData()">
-					保存数据
-				</view>
-				<view v-if="!isSpeak" class="o-button" @click="reloadData()">
-					恢复数据
-				</view>
-				<view v-if="!isSpeak" class="o-button" @click="saveTxt()">
-					保存txt
-				</view>
-			</view>
+                <view v-if="!isSpeak" class="o-button" @click="saveData()">
+                    保存数据
+                </view>
+                <view v-if="!isSpeak" class="o-button" @click="reloadData()">
+                    恢复数据
+                </view>
+                <view v-if="!isSpeak" class="o-button" @click="saveTxt()">
+                    保存txt
+                </view>
+            </view>
 
-		</view>
-	</view>
+        </view>
+    </view>
 </template>
 
 <script>
-	// 以下路径需根据项目实际情况填写
-	import {
-		iosPlay,
-		androidPlay,
-		audioPlay
-	} from "../../js_sdk/wzc-speechSynthesis/speechSynthesis.js";
-
-	// #ifdef APP-PLUS
-	const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
-	const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件	
-	const innerAudioContext = uni.createInnerAudioContext();
-	// #endif
-
-	export default {
-		data() {
-			return {
-				title: 'Hello',
-				// #ifdef APP-PLUS
-				filePath: plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf"),
-				// #endif
-				requestParam: {
-					text: "",
-					textIndex: 0
-				},
-				map: new Map(),
-
-				// 朗读的内容
-				readContent: '',
-
-				// 暂停的位置
-				pauseIndex: 0,
-
-				ktNavBarHeight: 0,
-
-				buttonBoxHeight: 0,
-
-				isSpeak: false,
-				isMute: false,
-
-				isStop: false,
-
-				oldClip: "",
-
-				clipList: [],
-
-				clipStr: "",
-
-				pageArr: [],
-
-				gptResArr: [],
-
-				pageArrIndex: 0,
-
-				gptArrIndex: 0,
-
-				visitedPages: [],
-
-			}
-		},
-
-		mounted() {
-			// uni.$emit("fileCopy",abc)
-			uni.$on("fileCopy", async (content) => {
-				this.pageArr = this.pageSplit(content, 4000);
-				this.gptResArr = new Array(this.pageArr.length).fill("");
-
-				this.pageArrIndex = 0;
-				this.requestParam.text = this.pageArr[0];
-				// 				await this.fetchData(this.pageArr[0]).then(data => {
-				// 					console.log(data);
-				// 					this.gptResArr[0] = data;
-				// e
-				// 					this.visitedPages.push(0+"")
-				// 				}).catch(error => {
-				// 					console.error("Error fetching data:", error);
-				// 					this.requestParam.text = error;
-				// 					this.pageArrIndex--;
-				// 				});
-				// this.requestParam.text = this.pageArr[0];
-
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				this.$nextTick(() => {
-					this.updateNextOnePage(-1);
-				});
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
-			});
-
-
-			this.getHeight();
-
-		},
-		methods: {
-			saveData() {
-				const dataToSave = {
-					title: this.title,
-					requestParam: this.requestParam,
-					// Add other properties you need to save
-					gptResArr: this.gptResArr,
-					pageArr: this.pageArr,
-					pageArrIndex: this.pageArrIndex,
-					gptArrIndex: this.gptArrIndex,
-					visitedPages: this.visitedPages,
-				};
-
-				// Convert data to JSON string
-				const dataStr = JSON.stringify(dataToSave);
-
-				// #ifdef APP-PLUS
-				const fileSystem = plus.io;
-				const filePath = "_doc/data.json"; // File path where data will be saved
-
-				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
-					fs.root.getFile(filePath, {
-						create: true
-					}, (fileEntry) => {
-						fileEntry.createWriter((fileWriter) => {
-							fileWriter.write(dataStr);
-							console.log('Data saved successfully');
-						}, (error) => console.error('File write failed:', error));
-					}, (error) => console.error('Get file failed:', error));
-				}, (error) => console.error('Request file system failed:', error));
-				// #endif
-			},
-
-			saveTxt() {
-				// Concatenate gptResArr with '\n\n\n'
-				const concatenatedGptResArr = this.gptResArr.join('\n\n\n');
-				const concatenatedPageArr = this.pageArr.join('\n');
-				const concatenatedAll = concatenatedGptResArr + '\n\n\n\n\n\n\n' + concatenatedPageArr; 
-
-				// #ifdef APP-PLUS
-				const fileSystem = plus.io;
-				const txtFilePath = "_doc/book/book.txt"; // 文件保存路径
-
-				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
-					fs.root.getFile(txtFilePath, {
-						create: true
-					}, (fileEntry) => {
-						fileEntry.createWriter((fileWriter) => {
-							fileWriter.write(concatenatedAll); // 直接写入拼接后的字符串
-							console.log('Txt saved successfully');
-						}, (error) => console.error('File write failed:', error));
-					}, (error) => console.error('Get file failed:', error));
-				}, (error) => console.error('Request file system failed:', error));
-				// #endif
-			},
-			reloadData() {
-				// #ifdef APP-PLUS
-				const fileSystem = plus.io;
-				const filePath = "_doc/data.json"; // File path from where data will be loaded
-
-				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
-					fs.root.getFile(filePath, {}, (fileEntry) => {
-						fileEntry.file((file) => {
-							const reader = new plus.io.FileReader();
-							reader.onloadend = (e) => {
-								const data = JSON.parse(e.target.result);
-								this.title = data.title;
-								this.requestParam = data.requestParam;
-								this.pageArrIndex = data.pageArrIndex;
-								this.gptArrIndex = data.gptArrIndex;
-								// Update other properties as needed
-								this.gptResArr = Array.isArray(data.gptResArr) ? data
-									.gptResArr : [];
-								this.pageArr = Array.isArray(data.pageArr) ? data
-									.pageArr : [];
-								this.visitedPages = Array.isArray(data.visitedPages) ? data
-									.visitedPages : [];
-								console.log('Data reloaded successfully');
-							};
-							reader.readAsText(file);
-						}, (error) => console.error('Read file failed:', error));
-					}, (error) => console.error('Get file failed:', error));
-				}, (error) => console.error('Request file system failed:', error));
-				// #endif
-			},
-			resetData() {
-				this.title = 'Hello';
-				// #ifdef APP-PLUS
-				this.filePath = plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf");
-				// #endif
-				this.requestParam = {
-					text: "",
-					textIndex: 0
-				};
-				this.map = new Map();
-				this.readContent = '';
-				this.pauseIndex = 0;
-				this.ktNavBarHeight = 0;
-				this.buttonBoxHeight = 0;
-				this.isSpeak = false;
-				this.isMute = false;
-				this.isStop = false;
-				this.oldClip = "";
-				this.clipList = [];
-				this.clipStr = "";
-				this.pageArr = [];
-				this.gptResArr = [];
-				this.pageArrIndex = 0;
-				this.gptArrIndex = 0;
-				this.visitedPages = [];
-			},
-
-			openYsxy() {
-				plus.runtime.openURL("https://file.kantboot.com/agreement/TotYsxy.html")
-			},
-
-			async updateNextOnePage(start_page) {
-				var nextPageIndex = start_page;
-				while (nextPageIndex < this.pageArr.length - 1) {
-
-					await new Promise((resolve, reject) => {
-						setTimeout(() => {
-							resolve("");
-						}, 1000)
-					});
-					nextPageIndex++;
-					// if nextPageIndex in this.visitedPages, continue 
-					if (this.visitedPages.indexOf(nextPageIndex + "") != -1) {
-						continue;
-					}
-					// if not continue add the current page to the visitedPages
-					this.visitedPages.push(nextPageIndex + "")
-					await this.fetchData(this.pageArr[nextPageIndex]).then(data => {
-						console.log(data);
-						this.gptResArr[nextPageIndex] = data;
-						this.gptArrIndex = nextPageIndex;
-						if (nextPageIndex === 0) {
-							this.requestParam.text = this.gptResArr[
-								0]; // Assign the fetched data to the variabl
-						}
-					}).catch(error => {
-						console.error("Error fetching data:", error);
-						this.visitedPages = this.visitedPages.filter(page => page !== (nextPageIndex + ""));
-						nextPageIndex--;
-					});
-
-				}
-			},
-
-			fetchData(input_t) {
-				const inputText = "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点，用大概2000字的中文回答，文本:\"\"\"" +
-					input_t + "\"\"\", 要求格式：\"为了大家理解，先举个例子：...\"";
-				return new Promise((resolve, reject) => {
-					const url = `http://66.56.9.33:4000/?text=${encodeURIComponent(inputText)}`;
-					uni.request({
-						url: url,
-						method: 'GET',
-						success: (res) => {
-							console.log("res", res);
-							if (res.statusCode === 200) {
-								resolve(res.data);
-							} else {
-								reject(new Error('Server responded with status code: ' + res
-									.statusCode));
-							}
-						},
-						fail: (error) => {
-							console.log("error", error);
-							reject(new Error('Network request failed: ' + error.message));
-						}
-					});
-				});
-			},
-
-			// 上一页; 自动总结
-			prePage() {
-				if (this.pageArrIndex > 0) {
-					this.pageArrIndex--;
-					this.requestParam.textIndex = 0;
-					this.requestParam.text = this.gptResArr[this.pageArrIndex];
-
-					// this.requestParam.text = this.pageArr[this.pageArrIndex];
-					setTimeout(() => {
-						this.startPlay();
-					}, 100);
-
-				}
-
-			},
-
-			// 下一页
-			nextPage() {
-				if (this.pageArrIndex < this.pageArr.length - 1) {
-					this.pageArrIndex++;
-					this.requestParam.textIndex = 0;
-					this.requestParam.text = this.gptResArr[this.pageArrIndex];
-					// this.requestParam.text = this.pageArr[this.pageArrIndex];
-					setTimeout(() => {
-						this.startPlay();
-					}, 100);
-
-				}
-			},
-			pageSplit(text, pageNumber) {
-				var pageArr = [];
-				var page = '';
-				var pageLength = pageNumber;
-				var textLength = text.length;
-				var pageCount = Math.ceil(textLength / pageLength);
-				console.log("PageSplitLen: ")
-				console.log(pageLength)
-				console.log(textLength)
-				for (var i = 0; i < pageCount; i++) {
-					page = text.substr(i * pageLength, pageLength);
-					pageArr.push(page);
-				}
-				return pageArr;
-			},
-			toMute() {
-				if (!this.isMute) {
-					this.isMute = true;
-				} else {
-					this.isMute = false;
-				}
-
-			},
-
-			copyClipFront() {
-				uni.getClipboardData({
-					success: (res) => {
-						setTimeout(() => {
-							uni.$emit("fileCopy", res.data);
-						}, 500);
-					}
-				});
-			},
-
-			copyClip() {
-				setTimeout(() => {
-					this.resetData();
-				}, 200);
-				this.copyClipFront();
-			},
-
-			kuaijieRun() {
-				plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
-			},
-			getItemAtIndex(index) {
-				// return this.requestParam.text[index * 3];
-
-				return this.requestParam.text.substring(3 * index, 3 * index + 3);
-			},
-
-			toReadFile() {
-				uni.$emit("toReadFile");
-			},
-
-			getHeight() {
-				setTimeout(() => {
-					this.getKtNavBarHeight();
-					this.getButtonBoxHeight();
-				}, 300);
-			},
-			getKtNavBarHeight() {
-				uni.createSelectorQuery().in(this).select('#kt-nav-bar').boundingClientRect((data) => {
-					this.ktNavBarHeight = data.height;
-				}).exec();
-			},
-
-			getButtonBoxHeight() {
-				uni.createSelectorQuery().in(this).select('#button-box').boundingClientRect((data) => {
-					this.buttonBoxHeight = data.height;
-				}).exec();
-			},
-
-
-			startPlay() {
-				this.isSpeak = true;
-
-				this.stopSpeakingAtBoundary();
-				// this.getSpeechVoicesLanguage();
-
-				setTimeout(() => {
-					this.readContent = this.requestParam.text;
-					this.init();
-					// this.speakUtterance();
-					this.changeLocation(0);
-					this.isStop = false;
-					this.getHeight();
-				}, 100);
-			},
-
-			toEdit() {
-				this.isSpeak = false;
-				this.stopSpeakingAtBoundary();
-				// setTimeout(() => {
-				// 	this.copyClip();
-				// }, 100);
-
-			},
-
-			toStop() {
-				this.stopSpeakingAtBoundary();
-			},
-
-			toContinue() {
-				this.continueSpeaking();
-			},
-
-			init() {
-
-				var dic = {
-					"speechString": this.readContent, //文本
-					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
-					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
-					"voice": "Lilian",
-					"language": "zh-CN", //语言
-					"rate": 0.8, //速率
-					"volume": 1, //音量, 0-1 
-					"pitchMultiplier": 1, //声调, 0.5-2
-					"prefersAssistiveTechnologySettings": false, //是否辅助技术, ios14及以上才支持
-					"preUtteranceDelay": 0.0, //播放后的延
-					"postUtteranceDelay": 0.0 //播放前的延迟
-				}
-
-
-				// this.speakUtterance();
-				KJSpeechSynthesizer.init(dic, (res) => {
-					// console.log("init:" + JSON.stringify(res));
-					if (res.type == "init") {
-						console.log("初始化完成")
-					} else if (res.type == "didStartSpeechUtterance") {
-						console.log("开始播放/重新生成")
-					} else if (res.type == "didFinishSpeechUtterance") {
-						console.log("完成播放/生成")
-						// if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex +
-						// 		1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length - 10)) {
-						// 	setTimeout(() => {
-						// 		this.nextPage();
-						// 	}, 200);
-						// }
-						//this.init();
-					} else if (res.type == "didPauseSpeechUtterance") {
-						console.log("暂停播放/生成")
-					} else if (res.type == "didContinueSpeechUtterance") {
-						console.log("继续播放/生成")
-					} else if (res.type == "didCancelSpeechUtterance") {
-						console.log("取消播放/生成")
-					} else if (res.type == "willSpeakRangeOfSpeechString") {
-						this.requestParam.textIndex = res.location - (-this.pauseIndex);
-						console.log("播放/生成文本的位置，第" + res.location + "字符");
-						// console.log("textIndex ", this.requestParam.textIndex);
-						// console.log("Text length ", this.requestParam.text.length);
-						// if ( (this.requestParam.textIndex >= this.requestParam.text.length-5) && (!this.flipPage )) {
-						// 	this.flipPage = true;
-
-						// 	this.flipPage = false;
-						// }
-					}
-				})
-
-				KJSpeechSynthesizerWrite.init(dic, (res) => {
-					console.log("Writeinit:" + JSON.stringify(res));
-					if (res.type == "init") {
-						console.log("Write初始化完成")
-					} else if (res.type == "didStartSpeechUtterance") {
-						console.log("Write开始播放/重新生成")
-					} else if (res.type == "didFinishSpeechUtterance") {
-						console.log("Write完成播放/生成")
-						innerAudioContext.autoplay = true;
-						innerAudioContext.src = this.filePath;
-						innerAudioContext.onPlay(() => {
-							console.log('开始播放');
-						});
-						innerAudioContext.onError((res) => {
-							console.log(res.errMsg);
-							console.log(res.errCode);
-						});
-					} else if (res.type == "didPauseSpeechUtterance") {
-						console.log("Write暂停播放/生成")
-					} else if (res.type == "didContinueSpeechUtterance") {
-						console.log("Write继续播放/生成")
-					} else if (res.type == "didCancelSpeechUtterance") {
-						console.log("Write取消播放/生成")
-					} else if (res.type == "willSpeakRangeOfSpeechString") {
-						console.log("Write播放/生成文本的位置，第" + res.location + "字符")
-					}
-				})
-			},
-
-			// 根据index修改播放位置
-			changeLocation(index) {
-				this.pauseIndex = index;
-				this.readContent = this.requestParam.text.substring(this.pauseIndex);
-				this.stopSpeakingAtBoundary();
-				setTimeout(() => {
-					this.init();
-					if (!this.isMute) {
-						this.speakUtterance();
-					}
-					this.isStop = false;
-					setTimeout(() => {
-						this.$forceUpdate();
-					}, 100);
-				}, 100);
-			},
-
-			speakUtterance() {
-				KJSpeechSynthesizer.speakUtterance((res) => {
-					console.log("speakUtterance:" + JSON.stringify(res));
-				});
-
-			},
-			pauseSpeakingAtBoundary() {
-				KJSpeechSynthesizer.pauseSpeakingAtBoundary({
-					"boundary": 0
-				}, (res) => {
-					console.log("pauseSpeakingAtBoundary:" + JSON.stringify(res))
-				});
-			},
-			continueSpeaking() {
-				KJSpeechSynthesizer.continueSpeaking((res) => {
-					console.log("continueSpeaking:" + JSON.stringify(res))
-				});
-			},
-			stopSpeakingAtBoundary() {
-				KJSpeechSynthesizer.stopSpeakingAtBoundary({
-					"boundary": 0
-				}, (res) => {
-					console.log("stopSpeakingAtBoundary:" + JSON.stringify(res))
-					this.isStop = true;
-				});
-			},
-			writeUtterance() {
-				/**
-				 * ios13及以上才支持
-				 * */
-				var dic = {
-					"filePath": this.filePath,
-					"commonFormat": 3, //写入文件时使用的处理格式 0(Other) 1(Float32) 2(Float64) 3(Int16) 4(Int32)
-					"interleaved": false //是否使用交错处理格式
-					// "settings": {
-					//  "AVLinearPCMBitDepthKey": 16,
-					//  "AVLinearPCMIsBigEndianKey": 0,
-					//  "AVLinearPCMIsFloatKey": 0,
-					//  "AVLinearPCMIsNonInterleaved": 0,
-					//  "AVNumberOfChannelsKey": 1,
-					//  "AVSampleRateKey": 22050
-					// }
-				}
-				KJSpeechSynthesizerWrite.writeUtterance(dic, (res) => {
-					console.log("writeUtterance:" + JSON.stringify(res));
-				})
-			},
-			isSpeaking() {
-				KJSpeechSynthesizer.isSpeaking((res) => {
-					console.log("isSpeaking:" + JSON.stringify(res))
-				});
-			},
-			isPaused() {
-				KJSpeechSynthesizer.isPaused((res) => {
-					console.log("isPaused:" + JSON.stringify(res))
-				});
-			},
-			getSpeechVoicesLanguage() {
-				KJSpeechSynthesizer.getSpeechVoicesLanguage((res) => {
-					console.log("getSpeechVoicesLanguage:" + JSON.stringify(res))
-				});
-			}
-		}
-	}
+// 以下路径需根据项目实际情况填写
+import { ref } from "vue";
+import {
+    iosPlay,
+    androidPlay,
+    audioPlay
+} from "../../js_sdk/wzc-speechSynthesis/speechSynthesis.js";
+
+// #ifdef APP-PLUS
+const KJSpeechSynthesizer = uni.requireNativePlugin('KJ-SpeechSynthesizer');
+const KJSpeechSynthesizerWrite = uni.requireNativePlugin('KJ-SpeechSynthesizerWrite'); //注意：如果需要同时播放和生成音频，可以用这个组件	
+const innerAudioContext = uni.createInnerAudioContext();
+// #endif
+
+export default {
+    data() {
+        return {
+            title: 'Hello',
+            // #ifdef APP-PLUS
+            filePath: plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf"),
+            // #endif
+            requestParam: {
+                text: "",
+                textIndex: 0
+            },
+            map: new Map(),
+
+            // 朗读的内容
+            readContent: '',
+
+            // 暂停的位置
+            pauseIndex: 0,
+
+            ktNavBarHeight: 0,
+
+            buttonBoxHeight: 0,
+
+            isSpeak: false,
+            isMute: false,
+
+            isStop: false,
+
+            oldClip: "",
+
+            clipList: [],
+
+            clipStr: "",
+
+            pageArr: [],
+
+            gptResArr: [],
+
+            pageArrIndex: 0,
+
+            gptArrIndex: 0,
+
+            visitedPages: [],
+
+        }
+    },
+
+    mounted() {
+        // uni.$emit("fileCopy",abc)
+        uni.$on("fileCopy", async (content) => {
+            this.pageArr = this.pageSplit(content, 4000);
+            this.gptResArr = new Array(this.pageArr.length).fill("");
+
+            this.pageArrIndex = 0;
+            this.requestParam.text = this.pageArr[0];
+            // 				await this.fetchData(this.pageArr[0]).then(data => {
+            // 					console.log(data);
+            // 					this.gptResArr[0] = data;
+            // e
+            // 					this.visitedPages.push(0+"")
+            // 				}).catch(error => {
+            // 					console.error("Error fetching data:", error);
+            // 					this.requestParam.text = error;
+            // 					this.pageArrIndex--;
+            // 				});
+            // this.requestParam.text = this.pageArr[0];
+
+
+            this.$nextTick(() => {
+                this.updateNextOnePage(-1);
+            });
+            this.$nextTick(() => {
+                this.updateNextOnePage(-1);
+            });
+            this.$nextTick(() => {
+                this.updateNextOnePage(-1);
+            });
+            this.$nextTick(() => {
+                this.updateNextOnePage(-1);
+            });
+            this.$nextTick(() => {
+                this.updateNextOnePage(-1);
+            });
+            // this.$nextTick(() => {
+            // 	this.updateNextOnePage(-1);
+            // });
+            // this.$nextTick(() => {
+            // 	this.updateNextOnePage(-1);
+            // });
+            // this.$nextTick(() => {
+            // 	this.updateNextOnePage(-1);
+            // });
+            // this.$nextTick(() => {
+            // 	this.updateNextOnePage(-1);
+            // });
+
+        });
+
+
+        this.getHeight();
+
+    },
+    methods: {
+        saveData() {
+            const dataToSave = {
+                title: this.title,
+                requestParam: this.requestParam,
+                // Add other properties you need to save
+                gptResArr: this.gptResArr,
+                pageArr: this.pageArr,
+                pageArrIndex: this.pageArrIndex,
+                gptArrIndex: this.gptArrIndex,
+                visitedPages: this.visitedPages,
+            };
+
+            // Convert data to JSON string
+            const dataStr = JSON.stringify(dataToSave);
+
+            // #ifdef APP-PLUS
+            const fileSystem = plus.io;
+            const filePath = "_doc/data.json"; // File path where data will be saved
+
+            fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+                fs.root.getFile(filePath, {
+                    create: true
+                }, (fileEntry) => {
+                    fileEntry.createWriter((fileWriter) => {
+                        fileWriter.write(dataStr);
+                        console.log('Data saved successfully');
+                    }, (error) => console.error('File write failed:', error));
+                }, (error) => console.error('Get file failed:', error));
+            }, (error) => console.error('Request file system failed:', error));
+            // #endif
+        },
+        settingPopupChange() {
+            // TODO 设置变化
+        },
+        openSettingPopup() {
+            this.$refs.settingPopup.open();
+        },
+
+        saveTxt() {
+            // Concatenate gptResArr with '\n\n\n'
+            const concatenatedGptResArr = this.gptResArr.join('\n\n\n');
+            const concatenatedPageArr = this.pageArr.join('\n');
+            const concatenatedAll = concatenatedGptResArr + '\n\n\n\n\n\n\n' + concatenatedPageArr;
+
+            // #ifdef APP-PLUS
+            const fileSystem = plus.io;
+            const txtFilePath = "_doc/book/book.txt"; // 文件保存路径
+
+            fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+                fs.root.getFile(txtFilePath, {
+                    create: true
+                }, (fileEntry) => {
+                    fileEntry.createWriter((fileWriter) => {
+                        fileWriter.write(concatenatedAll); // 直接写入拼接后的字符串
+                        console.log('Txt saved successfully');
+                    }, (error) => console.error('File write failed:', error));
+                }, (error) => console.error('Get file failed:', error));
+            }, (error) => console.error('Request file system failed:', error));
+            // #endif
+        },
+        reloadData() {
+            // #ifdef APP-PLUS
+            const fileSystem = plus.io;
+            const filePath = "_doc/data.json"; // File path from where data will be loaded
+
+            fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+                fs.root.getFile(filePath, {}, (fileEntry) => {
+                    fileEntry.file((file) => {
+                        const reader = new plus.io.FileReader();
+                        reader.onloadend = (e) => {
+                            const data = JSON.parse(e.target.result);
+                            this.title = data.title;
+                            this.requestParam = data.requestParam;
+                            this.pageArrIndex = data.pageArrIndex;
+                            this.gptArrIndex = data.gptArrIndex;
+                            // Update other properties as needed
+                            this.gptResArr = Array.isArray(data.gptResArr) ? data
+                                .gptResArr : [];
+                            this.pageArr = Array.isArray(data.pageArr) ? data
+                                .pageArr : [];
+                            this.visitedPages = Array.isArray(data.visitedPages) ? data
+                                .visitedPages : [];
+                            console.log('Data reloaded successfully');
+                        };
+                        reader.readAsText(file);
+                    }, (error) => console.error('Read file failed:', error));
+                }, (error) => console.error('Get file failed:', error));
+            }, (error) => console.error('Request file system failed:', error));
+            // #endif
+        },
+        resetData() {
+            this.title = 'Hello';
+            // #ifdef APP-PLUS
+            this.filePath = plus.io.convertLocalFileSystemURL("_doc/KJSpeechSynthesizer/test.caf");
+            // #endif
+            this.requestParam = {
+                text: "",
+                textIndex: 0
+            };
+            this.map = new Map();
+            this.readContent = '';
+            this.pauseIndex = 0;
+            this.ktNavBarHeight = 0;
+            this.buttonBoxHeight = 0;
+            this.isSpeak = false;
+            this.isMute = false;
+            this.isStop = false;
+            this.oldClip = "";
+            this.clipList = [];
+            this.clipStr = "";
+            this.pageArr = [];
+            this.gptResArr = [];
+            this.pageArrIndex = 0;
+            this.gptArrIndex = 0;
+            this.visitedPages = [];
+        },
+
+        openYsxy() {
+            plus.runtime.openURL("https://file.kantboot.com/agreement/TotYsxy.html")
+        },
+
+        async updateNextOnePage(start_page) {
+            var nextPageIndex = start_page;
+            while (nextPageIndex < this.pageArr.length - 1) {
+
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve("");
+                    }, 1000)
+                });
+                nextPageIndex++;
+                // if nextPageIndex in this.visitedPages, continue 
+                if (this.visitedPages.indexOf(nextPageIndex + "") != -1) {
+                    continue;
+                }
+                // if not continue add the current page to the visitedPages
+                this.visitedPages.push(nextPageIndex + "")
+                await this.fetchData(this.pageArr[nextPageIndex]).then(data => {
+                    console.log(data);
+                    this.gptResArr[nextPageIndex] = data;
+                    this.gptArrIndex = nextPageIndex;
+                    if (nextPageIndex === 0) {
+                        this.requestParam.text = this.gptResArr[
+                            0]; // Assign the fetched data to the variabl
+                    }
+                }).catch(error => {
+                    console.error("Error fetching data:", error);
+                    this.visitedPages = this.visitedPages.filter(page => page !== (nextPageIndex + ""));
+                    nextPageIndex--;
+                });
+
+            }
+        },
+
+        fetchData(input_t) {
+            const inputText = `${uni.getStorageSync("responseText") || "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点"}，用大概2000字的中文回答，文本:\"\"\"` +
+                input_t + `\"\"\", 要求格式：\"${uni.getStorageSync("wouldResponseText") || "为了大家理解，先举个例子：..."}\"`;
+            return new Promise((resolve, reject) => {
+                const url = `http://66.56.9.33:4000/?text=${encodeURIComponent(inputText)}`;
+                uni.request({
+                    url: url,
+                    method: 'GET',
+                    success: (res) => {
+                        console.log("res", res);
+                        if (res.statusCode === 200) {
+                            resolve(res.data);
+                        } else {
+                            reject(new Error('Server responded with status code: ' + res
+                                .statusCode));
+                        }
+                    },
+                    fail: (error) => {
+                        console.log("error", error);
+                        reject(new Error('Network request failed: ' + error.message));
+                    }
+                });
+            });
+        },
+
+        // 上一页; 自动总结
+        prePage() {
+            if (this.pageArrIndex > 0) {
+                this.pageArrIndex--;
+                this.requestParam.textIndex = 0;
+                this.requestParam.text = this.gptResArr[this.pageArrIndex];
+
+                // this.requestParam.text = this.pageArr[this.pageArrIndex];
+                setTimeout(() => {
+                    this.startPlay();
+                }, 100);
+
+            }
+
+        },
+
+        // 下一页
+        nextPage() {
+            if (this.pageArrIndex < this.pageArr.length - 1) {
+                this.pageArrIndex++;
+                this.requestParam.textIndex = 0;
+                this.requestParam.text = this.gptResArr[this.pageArrIndex];
+                // this.requestParam.text = this.pageArr[this.pageArrIndex];
+                setTimeout(() => {
+                    this.startPlay();
+                }, 100);
+
+            }
+        },
+        pageSplit(text, pageNumber) {
+            var pageArr = [];
+            var page = '';
+            var pageLength = pageNumber;
+            var textLength = text.length;
+            var pageCount = Math.ceil(textLength / pageLength);
+            console.log("PageSplitLen: ")
+            console.log(pageLength)
+            console.log(textLength)
+            for (var i = 0; i < pageCount; i++) {
+                page = text.substr(i * pageLength, pageLength);
+                pageArr.push(page);
+            }
+            return pageArr;
+        },
+        toMute() {
+            if (!this.isMute) {
+                this.isMute = true;
+            } else {
+                this.isMute = false;
+            }
+
+        },
+
+        copyClipFront() {
+            uni.getClipboardData({
+                success: (res) => {
+                    setTimeout(() => {
+                        uni.$emit("fileCopy", res.data);
+                    }, 500);
+                }
+            });
+        },
+
+        copyClip() {
+            setTimeout(() => {
+                this.resetData();
+            }, 200);
+            this.copyClipFront();
+        },
+
+        kuaijieRun() {
+            plus.runtime.openURL(`shortcuts://run-shortcut?name=${encodeURIComponent('GPT切字符 测试 3本地')}`);
+        },
+        getItemAtIndex(index) {
+            // return this.requestParam.text[index * 3];
+
+            return this.requestParam.text.substring(3 * index, 3 * index + 3);
+        },
+
+        toReadFile() {
+            uni.$emit("toReadFile");
+        },
+
+        getHeight() {
+            setTimeout(() => {
+                this.getKtNavBarHeight();
+                this.getButtonBoxHeight();
+            }, 300);
+        },
+        getKtNavBarHeight() {
+            uni.createSelectorQuery().in(this).select('#kt-nav-bar').boundingClientRect((data) => {
+                this.ktNavBarHeight = data.height;
+            }).exec();
+        },
+
+        getButtonBoxHeight() {
+            uni.createSelectorQuery().in(this).select('#button-box').boundingClientRect((data) => {
+                this.buttonBoxHeight = data.height;
+            }).exec();
+        },
+
+
+        startPlay() {
+            this.isSpeak = true;
+
+            this.stopSpeakingAtBoundary();
+            // this.getSpeechVoicesLanguage();
+
+            setTimeout(() => {
+                this.readContent = this.requestParam.text;
+                this.init();
+                // this.speakUtterance();
+                this.changeLocation(0);
+                this.isStop = false;
+                this.getHeight();
+            }, 100);
+        },
+
+        toEdit() {
+            this.isSpeak = false;
+            this.stopSpeakingAtBoundary();
+            // setTimeout(() => {
+            // 	this.copyClip();
+            // }, 100);
+
+        },
+
+        toStop() {
+            this.stopSpeakingAtBoundary();
+        },
+
+        toContinue() {
+            this.continueSpeaking();
+        },
+
+        init() {
+            var languageCode = uni.getStorageSync("languageCode") || "zh-CN";
+            var rate = uni.getStorageSync("rate") || 0.8;
+
+            var dic = {
+                "speechString": this.readContent, //文本
+                "usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
+                "mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
+                "voice": "Lilian",
+                "language": languageCode, //语言
+                "rate": rate, //速率
+                "volume": 1, //音量, 0-1 
+                "pitchMultiplier": 1, //声调, 0.5-2
+                "prefersAssistiveTechnologySettings": false, //是否辅助技术, ios14及以上才支持
+                "preUtteranceDelay": 0.0, //播放后的延
+                "postUtteranceDelay": 0.0 //播放前的延迟
+            }
+
+
+            // this.speakUtterance();
+            KJSpeechSynthesizer.init(dic, (res) => {
+                // console.log("init:" + JSON.stringify(res));
+                if (res.type == "init") {
+                    console.log("初始化完成")
+                } else if (res.type == "didStartSpeechUtterance") {
+                    console.log("开始播放/重新生成")
+                } else if (res.type == "didFinishSpeechUtterance") {
+                    console.log("完成播放/生成")
+                    // if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex +
+                    // 		1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length - 10)) {
+                    // 	setTimeout(() => {
+                    // 		this.nextPage();
+                    // 	}, 200);
+                    // }
+                    //this.init();
+                } else if (res.type == "didPauseSpeechUtterance") {
+                    console.log("暂停播放/生成")
+                } else if (res.type == "didContinueSpeechUtterance") {
+                    console.log("继续播放/生成")
+                } else if (res.type == "didCancelSpeechUtterance") {
+                    console.log("取消播放/生成")
+                } else if (res.type == "willSpeakRangeOfSpeechString") {
+                    this.requestParam.textIndex = res.location - (-this.pauseIndex);
+                    console.log("播放/生成文本的位置，第" + res.location + "字符");
+                    // console.log("textIndex ", this.requestParam.textIndex);
+                    // console.log("Text length ", this.requestParam.text.length);
+                    // if ( (this.requestParam.textIndex >= this.requestParam.text.length-5) && (!this.flipPage )) {
+                    // 	this.flipPage = true;
+
+                    // 	this.flipPage = false;
+                    // }
+                }
+            })
+
+            KJSpeechSynthesizerWrite.init(dic, (res) => {
+                console.log("Writeinit:" + JSON.stringify(res));
+                if (res.type == "init") {
+                    console.log("Write初始化完成")
+                } else if (res.type == "didStartSpeechUtterance") {
+                    console.log("Write开始播放/重新生成")
+                } else if (res.type == "didFinishSpeechUtterance") {
+                    console.log("Write完成播放/生成")
+                    innerAudioContext.autoplay = true;
+                    innerAudioContext.src = this.filePath;
+                    innerAudioContext.onPlay(() => {
+                        console.log('开始播放');
+                    });
+                    innerAudioContext.onError((res) => {
+                        console.log(res.errMsg);
+                        console.log(res.errCode);
+                    });
+                } else if (res.type == "didPauseSpeechUtterance") {
+                    console.log("Write暂停播放/生成")
+                } else if (res.type == "didContinueSpeechUtterance") {
+                    console.log("Write继续播放/生成")
+                } else if (res.type == "didCancelSpeechUtterance") {
+                    console.log("Write取消播放/生成")
+                } else if (res.type == "willSpeakRangeOfSpeechString") {
+                    console.log("Write播放/生成文本的位置，第" + res.location + "字符")
+                }
+            })
+        },
+
+        // 根据index修改播放位置
+        changeLocation(index) {
+            this.pauseIndex = index;
+            this.readContent = this.requestParam.text.substring(this.pauseIndex);
+            this.stopSpeakingAtBoundary();
+            setTimeout(() => {
+                this.init();
+                if (!this.isMute) {
+                    this.speakUtterance();
+                }
+                this.isStop = false;
+                setTimeout(() => {
+                    this.$forceUpdate();
+                }, 100);
+            }, 100);
+        },
+
+        speakUtterance() {
+            KJSpeechSynthesizer.speakUtterance((res) => {
+                console.log("speakUtterance:" + JSON.stringify(res));
+            });
+
+        },
+        pauseSpeakingAtBoundary() {
+            KJSpeechSynthesizer.pauseSpeakingAtBoundary({
+                "boundary": 0
+            }, (res) => {
+                console.log("pauseSpeakingAtBoundary:" + JSON.stringify(res))
+            });
+        },
+        continueSpeaking() {
+            KJSpeechSynthesizer.continueSpeaking((res) => {
+                console.log("continueSpeaking:" + JSON.stringify(res))
+            });
+        },
+        stopSpeakingAtBoundary() {
+            KJSpeechSynthesizer.stopSpeakingAtBoundary({
+                "boundary": 0
+            }, (res) => {
+                console.log("stopSpeakingAtBoundary:" + JSON.stringify(res))
+                this.isStop = true;
+            });
+        },
+        writeUtterance() {
+            /**
+             * ios13及以上才支持
+             * */
+            var dic = {
+                "filePath": this.filePath,
+                "commonFormat": 3, //写入文件时使用的处理格式 0(Other) 1(Float32) 2(Float64) 3(Int16) 4(Int32)
+                "interleaved": false //是否使用交错处理格式
+                // "settings": {
+                //  "AVLinearPCMBitDepthKey": 16,
+                //  "AVLinearPCMIsBigEndianKey": 0,
+                //  "AVLinearPCMIsFloatKey": 0,
+                //  "AVLinearPCMIsNonInterleaved": 0,
+                //  "AVNumberOfChannelsKey": 1,
+                //  "AVSampleRateKey": 22050
+                // }
+            }
+            KJSpeechSynthesizerWrite.writeUtterance(dic, (res) => {
+                console.log("writeUtterance:" + JSON.stringify(res));
+            })
+        },
+        isSpeaking() {
+            KJSpeechSynthesizer.isSpeaking((res) => {
+                console.log("isSpeaking:" + JSON.stringify(res))
+            });
+        },
+        isPaused() {
+            KJSpeechSynthesizer.isPaused((res) => {
+                console.log("isPaused:" + JSON.stringify(res))
+            });
+        },
+        getSpeechVoicesLanguage() {
+            KJSpeechSynthesizer.getSpeechVoicesLanguage((res) => {
+                console.log("getSpeechVoicesLanguage:" + JSON.stringify(res))
+            });
+        }
+    }
+}
 </script>
 
 
 <style lang="scss" scoped>
-	.textarea {
-		width: 100%;
-		height: 300rpx;
-		border-radius: 10rpx;
-		padding: 20rpx;
-		box-sizing: border-box;
-		font-size: 30rpx;
-		line-height: 40rpx;
-		color: #333;
-		resize: none;
-	}
+.textarea {
+    width: 100%;
+    height: 300rpx;
+    border-radius: 10rpx;
+    padding: 20rpx;
+    box-sizing: border-box;
+    font-size: 30rpx;
+    line-height: 40rpx;
+    color: #333;
+    resize: none;
+}
 
-	.text-def {
-		color: #666;
-	}
+.text-def {
+    color: #666;
+}
 
-	.text-readed {
-		color: red;
-	}
+.text-readed {
+    color: red;
+}
 
-	.text-view {
-		// 解决ios下英文单词换行的问题
-		word-break: break-all;
-		word-wrap: break-word;
+.text-view {
+    // 解决ios下英文单词换行的问题
+    word-break: break-all;
+    word-wrap: break-word;
 
-	}
+}
 
-	.button-box {
-		position: fixed;
-		width: 100%;
-		bottom: 0;
-		left: 0;
-		background-color: #fff;
-		padding: 20rpx;
-		box-sizing: border-box;
+.button-box {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    padding: 20rpx;
+    box-sizing: border-box;
 
-		border-top: 1px solid #f0f0f0;
-		padding-top: 20rpx;
-		box-shadow: 0 0 30rpx #f0f0f0;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 20rpx;
+    box-shadow: 0 0 30rpx #f0f0f0;
 
-	}
+}
 
 
-	.o-button {
-		width: 100%;
-		background-color: #333;
-		border-radius: 10rpx;
-		color: #fff;
-		text-align: center;
-		font-size: 30rpx;
-		padding: 25rpx 0 25rpx 0;
-	}
+.o-button {
+    width: 100%;
+    background-color: #333;
+    border-radius: 10rpx;
+    color: #fff;
+    text-align: center;
+    font-size: 30rpx;
+    padding: 25rpx 0 25rpx 0;
+}
 
-	.o-button:active {
-		background-color: #666;
-	}
+.o-button:active {
+    background-color: #666;
+}
 
-	.tab-box {
-		.tab {
-			background-color: rgba(0, 0, 0, .5);
-			color: #fff;
-			padding: 10rpx;
-			border-radius: 30rpx;
-			display: inline-block;
-			float: right;
-			margin-right: 20rpx;
-		}
+.tab-box {
+    .tab {
+        background-color: rgba(0, 0, 0, .5);
+        color: #fff;
+        padding: 10rpx;
+        border-radius: 30rpx;
+        display: inline-block;
+        float: right;
+        margin-right: 20rpx;
+    }
+}
 
-	}
+.tab-setting {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0);
+    color: #000;
+    font-size: 45rpx;
+    left: 20rpx;
+}
+
+.tab-setting:active {
+    opacity: .7;
+}
 </style>
