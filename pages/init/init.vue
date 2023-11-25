@@ -62,8 +62,8 @@
 						<view v-if="isSpeak" style="text-align: center;">
 							<view type="primary" v-if="isStop" class="o-button"
 								@click="changeLocation(requestParam.textIndex)">
-								播放</view>
-							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">播放
+								继续播放</view>
+							<view type="primary" v-if="!isStop" class="o-button" @click="stopSpeakingAtBoundary">暂停播放
 							</view>
 						</view>
 
@@ -120,6 +120,9 @@
 				</view>
 				<view v-if="!isSpeak" class="o-button" @click="reloadData()">
 					恢复数据
+				</view>
+				<view v-if="!isSpeak" class="o-button" @click="saveTxt()">
+					保存txt
 				</view>
 			</view>
 
@@ -195,7 +198,7 @@
 				this.gptResArr = new Array(this.pageArr.length).fill("");
 
 				this.pageArrIndex = 0;
-				this.requestParam.text = "Waiting First Page";
+				this.requestParam.text = this.pageArr[0];
 				// 				await this.fetchData(this.pageArr[0]).then(data => {
 				// 					console.log(data);
 				// 					this.gptResArr[0] = data;
@@ -248,6 +251,10 @@
 					requestParam: this.requestParam,
 					// Add other properties you need to save
 					gptResArr: this.gptResArr,
+					pageArr: this.pageArr,
+					pageArrIndex: this.pageArrIndex,
+					gptArrIndex: this.gptArrIndex,
+					visitedPages: this.visitedPages,
 				};
 
 				// Convert data to JSON string
@@ -269,6 +276,29 @@
 				}, (error) => console.error('Request file system failed:', error));
 				// #endif
 			},
+
+			saveTxt() {
+				// Concatenate gptResArr with '\n\n\n'
+				const concatenatedGptResArr = this.gptResArr.join('\n\n\n');
+				const concatenatedPageArr = this.pageArr.join('\n');
+				const concatenatedAll = concatenatedGptResArr + '\n\n\n\n\n\n\n' + concatenatedPageArr; 
+
+				// #ifdef APP-PLUS
+				const fileSystem = plus.io;
+				const txtFilePath = "_doc/book/book.txt"; // 文件保存路径
+
+				fileSystem.requestFileSystem(fileSystem.PRIVATE_DOC, (fs) => {
+					fs.root.getFile(txtFilePath, {
+						create: true
+					}, (fileEntry) => {
+						fileEntry.createWriter((fileWriter) => {
+							fileWriter.write(concatenatedAll); // 直接写入拼接后的字符串
+							console.log('Txt saved successfully');
+						}, (error) => console.error('File write failed:', error));
+					}, (error) => console.error('Get file failed:', error));
+				}, (error) => console.error('Request file system failed:', error));
+				// #endif
+			},
 			reloadData() {
 				// #ifdef APP-PLUS
 				const fileSystem = plus.io;
@@ -282,9 +312,15 @@
 								const data = JSON.parse(e.target.result);
 								this.title = data.title;
 								this.requestParam = data.requestParam;
+								this.pageArrIndex = data.pageArrIndex;
+								this.gptArrIndex = data.gptArrIndex;
 								// Update other properties as needed
 								this.gptResArr = Array.isArray(data.gptResArr) ? data
 									.gptResArr : [];
+								this.pageArr = Array.isArray(data.pageArr) ? data
+									.pageArr : [];
+								this.visitedPages = Array.isArray(data.visitedPages) ? data
+									.visitedPages : [];
 								console.log('Data reloaded successfully');
 							};
 							reader.readAsText(file);
@@ -543,12 +579,12 @@
 						console.log("开始播放/重新生成")
 					} else if (res.type == "didFinishSpeechUtterance") {
 						console.log("完成播放/生成")
-						if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex +
-								1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length - 10)) {
-							setTimeout(() => {
-								this.nextPage();
-							}, 200);
-						}
+						// if ((this.pageArrIndex < this.pageArr.length - 1) && (this.gptResArr[this.pageArrIndex +
+						// 		1] != "") && (this.requestParam.textIndex >= this.requestParam.text.length - 10)) {
+						// 	setTimeout(() => {
+						// 		this.nextPage();
+						// 	}, 200);
+						// }
 						//this.init();
 					} else if (res.type == "didPauseSpeechUtterance") {
 						console.log("暂停播放/生成")

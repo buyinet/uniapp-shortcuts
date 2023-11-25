@@ -1,6 +1,6 @@
 {
     "networkTimeout" : {
-        "request" : 180000
+        "request" : 600000
     },
     "name" : "TOT Reader",
     "appid" : "__UNI__DEF7112",
