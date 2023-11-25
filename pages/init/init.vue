@@ -2,11 +2,19 @@
 	<view class="content">
 		<kt-nav-bar v-if="false" id="kt-nav-bar" title="TOT阅读器"></kt-nav-bar>
 		<kt-status-bar-height id="kt-nav-bar"></kt-status-bar-height>
+		<setting-popup ref="settingPopup" @change="settingPopupChange"></setting-popup>
 		<view class="tab-box">
+			<view class="tab tab-setting"
+			style="background-color: rgba(0,0,0,0);"
+			@click="openSettingPopup()"
+			>
+				<u-icon name="setting" size="40rpx"></u-icon>
+			</view>
 			<view v-if="isSpeak" class="tab">{{ pageArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
 			<view v-if="isSpeak" class="tab">{{ gptArrIndex-(-1) }}{{"/"}}{{ pageArr.length }}</view>
 		</view>
-
+		
+		<view style="height: 20px;"></view>
 
 		<view style="padding: 20rpx;
 		box-sizing: border-box;
@@ -136,7 +144,8 @@
 
 <script>
 	// 以下路径需根据项目实际情况填写
-	import {
+	import { ref } from "vue";
+import {
 		iosPlay,
 		androidPlay,
 		audioPlay
@@ -203,17 +212,6 @@
 
 				this.pageArrIndex = 0;
 				this.requestParam.text = "Waiting First Page";
-				// 				await this.fetchData(this.pageArr[0]).then(data => {
-				// 					console.log(data);
-				// 					this.gptResArr[0] = data;
-				// e
-				// 					this.visitedPages.push(0+"")
-				// 				}).catch(error => {
-				// 					console.error("Error fetching data:", error);
-				// 					this.requestParam.text = error;
-				// 					this.pageArrIndex--;
-				// 				});
-				// this.requestParam.text = this.pageArr[0];
 
 				this.$nextTick(() => {
 					this.updateNextOnePage(-1);
@@ -236,12 +234,7 @@
 				this.$nextTick(() => {
 					this.updateNextOnePage(-1);
 				});
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
-				// this.$nextTick(() => {
-				// 	this.updateNextOnePage(-1);
-				// });
+
 			});
 
 
@@ -249,6 +242,12 @@
 
 		},
 		methods: {
+      settingPopupChange(){
+        // TODO 设置变化
+      },
+			openSettingPopup(){
+        this.$refs.settingPopup.open();
+			},
 			openYsxy(){
 				plus.runtime.openURL("https://file.kantboot.com/agreement/TotYsxy.html")
 			},
@@ -286,8 +285,8 @@
 			},
 
 			fetchData(input_t) {
-				const inputText = "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点，用大概2000字的中文回答，文本:\"\"\"" +
-					input_t + "\"\"\", 要求格式：\"为了大家理解，先举个例子：...\"";
+				const inputText = `${uni.getStorageSync("responseText") || "假设你是教授，请根据所给文本，先举一个例子，然后幽默生动地解释文本要点"}，用大概2000字的中文回答，文本:\"\"\"` +
+					input_t + `\"\"\", 要求格式：\"${uni.getStorageSync("wouldResponseText") || "为了大家理解，先举个例子：..."}\"`;
 				return new Promise((resolve, reject) => {
 					const url = `http://tot.kantboot.com/?text=${encodeURIComponent(inputText)}`;
 					uni.request({
@@ -443,14 +442,16 @@
 			},
 
 			init() {
+        var languageCode = uni.getStorageSync("languageCode")||"zh-CN";
+        var rate = uni.getStorageSync("rate")||0.8;
 
 				var dic = {
 					"speechString": this.readContent, //文本
 					"usesApplicationAudioSession": true, //是否使用了音频会话, ios13及以上才支持
 					"mixToTelephonyUplink": true, //是否混合到电话上行链路 ios13及以上才支持
 					"voice": "Lilian",
-					"language": "zh-CN", //语言
-					"rate": 0.8, //速率
+					"language": languageCode, //语言
+					"rate": rate, //速率
 					"volume": 1, //音量, 0-1 
 					"pitchMultiplier": 1, //声调, 0.5-2
 					"prefersAssistiveTechnologySettings": false, //是否辅助技术, ios14及以上才支持
@@ -675,6 +676,18 @@
 			float: right;
 			margin-right: 20rpx;
 		}
-
 	}
+	
+.tab-setting{
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0);
+	color:#000;
+	font-size: 45rpx;
+	left:20rpx;
+}
+
+.tab-setting:active{
+	opacity: .7;
+}
+
 </style>
